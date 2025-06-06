@@ -1,8 +1,24 @@
 'use client';
 
 import { Bell, Menu, Search, User } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+
+function formatPathname(pathname: string) {
+    const parts = pathname.split('/').filter(Boolean); // remove empty segments
+    if (parts.length === 1) return 'Dashboard';
+    return parts
+        .slice(1) // skip 'dashboard'
+        .map((part) =>
+            part
+                .replace(/-/g, ' ')
+                .replace(/\b\w/g, (char) => char.toUpperCase())
+        )
+        .join(' / ');
+}
 
 export default function Topbar({ setSidebarOpen }: { setSidebarOpen: (open: boolean) => void }) {
+    const pathname = usePathname();
+
     return (
         <div className="flex items-center justify-between px-6 py-4 shadow-sm bg-white">
             {/* Left: Menu Button on Mobile */}
@@ -14,7 +30,9 @@ export default function Topbar({ setSidebarOpen }: { setSidebarOpen: (open: bool
                     <Menu className="w-6 h-6" />
                 </button>
 
-                <span className="hidden md:block text-xl font-semibold text-gray-800">Dashboard</span>
+                <span className="hidden md:block text-xl font-semibold text-gray-800">
+                    {formatPathname(pathname)}
+                </span>
             </div>
 
             {/* Right: Search + Icons */}

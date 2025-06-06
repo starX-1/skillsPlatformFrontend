@@ -195,7 +195,9 @@ const TrainHubLanding = () => {
               <a href="#features" className="block py-2 text-gray-700 hover:text-blue-600">Features</a>
               <a href="#about" className="block py-2 text-gray-700 hover:text-blue-600">About</a>
               <a href="#contact" className="block py-2 text-gray-700 hover:text-blue-600">Contact</a>
-              <button className="w-full mt-2 bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition-colors">
+              <button
+                onClick={handleLoginNavigate}
+                className="w-full mt-2 bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition-colors">
                 Get Started
               </button>
             </div>

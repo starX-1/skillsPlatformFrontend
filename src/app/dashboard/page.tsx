@@ -10,15 +10,22 @@ import UpcomingExams from '@/components/dashboard/UpcomingExams';
 import { useEffect, useState } from 'react';
 import { FaBook, FaUserGraduate, FaUpload } from 'react-icons/fa';
 
+interface User {
+    id: string;
+    full_name: string;
+    email: string;
+    role: string;
+}
+
 export default function DashboardHome() {
-    const [user, setUser] = useState<any>({});
+    const [user, setUser] = useState<User | null>(null);
     const [greeting, setGreeting] = useState('');
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const userData = await authApi.decodeUser();
-                setUser(userData);
+                setUser(userData?.user);
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -39,7 +46,7 @@ export default function DashboardHome() {
             {/* Welcome Header */}
             <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                    {greeting}, {user?.user?.full_name}
+                    {greeting}, {user?.full_name}
                 </h1>
                 <p className="text-gray-500 mt-1">Here&#39;s your activity summary for today.</p>
             </div>

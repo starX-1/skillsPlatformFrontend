@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Play, Users, Award, BookOpen, Code, Star, Menu, X, ArrowRight, CheckCircle, Globe, Zap, Target } from 'lucide-react'
-import { title } from 'process';
+import { Play, Users, Award, BookOpen, Code, Star, Menu, X, ArrowRight, Globe, Zap, Target } from 'lucide-react'
+// import { title } from 'process';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

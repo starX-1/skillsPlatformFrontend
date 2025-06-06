@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import authApi from '../api/authApi/auth'
 import { useRouter } from 'next/navigation';
 
@@ -14,8 +14,9 @@ export default function useAuth({ redirectTo = '/login', protectedRoute = false 
         setLoading(true);
         const res = await authApi.decodeUser();
         setUser(res.user);
-      } catch (err) {
+      } catch (error) {
         setUser(null);
+        console.log(error);
         if (protectedRoute) router.push(redirectTo);
       } finally {
         setLoading(false);

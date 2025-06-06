@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import Image from 'next/image';
 
 interface Course {
     id: number;
@@ -65,7 +66,7 @@ export default function CoursesPage() {
                         key={course.id}
                         className="bg-white shadow rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition"
                     >
-                        <img
+                        <Image
                             src={course.image}
                             alt={course.title}
                             className="w-full h-40 object-cover"

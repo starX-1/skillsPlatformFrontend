@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import 'react-calendar/dist/Calendar.css';
+import { UserProvider } from "./context/UserContext";
 
 
 const geistSans = Geist({
@@ -73,7 +74,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
         <ToastContainer
           position="top-right"
           autoClose={5000}

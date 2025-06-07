@@ -1,6 +1,6 @@
 // app/dashboard/page.tsx
 'use client';
-
+import { useUser } from '../context/UserContext';
 import authApi from '@/api/authApi/auth';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import CourseCard from '@/components/dashboard/CourseCard';
@@ -10,29 +10,16 @@ import UpcomingExams from '@/components/dashboard/UpcomingExams';
 import { useEffect, useState } from 'react';
 import { FaBook, FaUserGraduate, FaUpload } from 'react-icons/fa';
 
-interface User {
-    id: string;
-    full_name: string;
-    email: string;
-    role: string;
-}
+
 
 export default function DashboardHome() {
-    const [user, setUser] = useState<User | null>(null);
+    const {user, loading} = useUser();
     const [greeting, setGreeting] = useState('');
+    // const [role, setRole] = useState('');
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const userData = await authApi.decodeUser();
-                setUser(userData?.user);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
 
-        fetchUser();
-    }, []);
+
+    
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -40,6 +27,9 @@ export default function DashboardHome() {
         else if (hour < 17) setGreeting('Good afternoon');
         else setGreeting('Good evening');
     }, []);
+
+    console.log(user);
+
 
     return (
         <div className="space-y-8">

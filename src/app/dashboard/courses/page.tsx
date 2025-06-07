@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
+import { useUser } from '@/app/context/UserContext';
 
 interface Course {
     id: number;
@@ -14,9 +15,23 @@ interface Course {
     category: string;
     enrolled: number;
 }
+interface User {
+    id: string;
+    full_name: string;
+    email: string;
+    role: string;
+}
+
+
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
+    const { user, loading } = useUser();
+    // const [role, setRole] = useState('');
+
+
+
+
 
     useEffect(() => {
         // Example mock data – replace with API call
@@ -52,12 +67,14 @@ export default function CoursesPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-end">
                 {/* <h1 className="text-2xl font-bold">Courses</h1> */}
-                <Link
-                    href="/dashboard/courses/create"
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                    <Plus size={18} /> Create Course
-                </Link>
+                {user?.role === 'admin' && (
+                    <Link
+                        href="/dashboard/courses/create"
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                        <Plus size={18} /> Create Course
+                    </Link>
+                )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -69,6 +86,8 @@ export default function CoursesPage() {
                         <Image
                             src={course.image}
                             alt={course.title}
+                            width={400}
+                            height={250}
                             className="w-full h-40 object-cover"
                         />
                         <div className="p-4 space-y-2">

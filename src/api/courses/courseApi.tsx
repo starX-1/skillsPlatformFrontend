@@ -1,5 +1,6 @@
 import authenticatedInstance from "@/utils/authenticatedInstance";
 import imagesInstance from "@/utils/imageupload";
+import instance from "@/utils/axios";
 
 const url = "/api/courses";
 const ImageUrl = '/api/images'
@@ -8,8 +9,7 @@ class CourseApi {
     async uploadThumbNail(file: File) {
         const formData = new FormData();
         formData.append('thumbnail', file);
-
-        console.log(file)
+        // console.log(file)
         const response = await imagesInstance.post(`${ImageUrl}/upload-thumbnail`, formData);
         return response.data;
     }
@@ -17,9 +17,11 @@ class CourseApi {
         const response = await authenticatedInstance.post(`${url}/addCourse`, { title, description, thumbnail_url });
         return response.data;
     }
-    async getCourses() {
-        const response = await authenticatedInstance.get(`${url}`);
-        return response.data;
+    async getCourses(page: number, limit: number) {
+        const response = await instance.get(`${url}`, {
+            params: { page, limit }
+        });
+        return response.data; // return the full response to access pagination info
     }
 }
 

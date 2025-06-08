@@ -7,8 +7,9 @@ import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useUser } from '@/app/context/UserContext';
 import courseApi from '@/api/courses/courseApi';
-import { number } from 'framer-motion';
+// import { number } from 'framer-motion';
 import { FcNext, FcPrevious } from 'react-icons/fc';
+import { AiOutlineEdit } from 'react-icons/ai';
 
 interface Course {
     id: number;
@@ -49,6 +50,7 @@ export default function CoursesPage() {
         fetchCourses();
     }, [currentPage]);
 
+    console.log(courses);
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-end">
@@ -98,8 +100,9 @@ export default function CoursesPage() {
 
                                     <Link
                                         href={`/dashboard/courses/edit/${course.id}`}
-                                        className="inline-block mt-2 text-blue-600 text-sm border border-amber-500 p-2 rounded-md font-bold hover:bg-amber-500 hover:text-white"
+                                        className="flex items-center gap-2 mt-2 text-blue-600 text-sm border border-amber-500 p-2 rounded-md font-bold hover:bg-amber-500 hover:text-white"
                                     >
+                                        <AiOutlineEdit />
                                         Edit
                                     </Link>
                                 ) : (

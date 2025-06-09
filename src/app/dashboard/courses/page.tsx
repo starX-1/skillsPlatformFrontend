@@ -10,9 +10,10 @@ import courseApi from '@/api/courses/courseApi';
 // import { number } from 'framer-motion';
 import { FcNext, FcPrevious } from 'react-icons/fc';
 import { AiOutlineEdit } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 interface Course {
-    id: number;
+    id: string;
     title: string;
     description: string;
     thumbnail_url: string;
@@ -35,6 +36,17 @@ export default function CoursesPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
+
+    const handleEnrollment = async (courseId: string) => {
+        const response = await courseApi.enrollCourse(courseId)
+        if (response.enrollment.id) {
+            toast.success(response.message);
+        }
+        else {
+            toast.error(response.message);
+        }
+
+    };
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -106,12 +118,12 @@ export default function CoursesPage() {
                                         Edit
                                     </Link>
                                 ) : (
-                                    <Link
-                                        href={`/dashboard/courses/${course.id}/edit`}
+                                    <button
+                                        onClick={() => handleEnrollment(course.id)}
                                         className="inline-block mt-2 text-blue-600 text-sm border border-amber-500 p-2 rounded-md font-bold hover:bg-amber-500 hover:text-white"
                                     >
                                         Enroll
-                                    </Link>
+                                    </button>
                                 )}
 
                             </div>

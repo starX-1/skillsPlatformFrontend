@@ -4,6 +4,7 @@ import instance from "@/utils/axios";
 
 const url = "/api/courses";
 const ImageUrl = '/api/images'
+const enrollUrl = '/api/enrollments'
 
 class CourseApi {
     async uploadThumbNail(file: File) {
@@ -22,6 +23,10 @@ class CourseApi {
             params: { page, limit }
         });
         return response.data; // return the full response to access pagination info
+    }
+    async enrollCourse(courseId: string) {
+        const response = await authenticatedInstance.post(`${enrollUrl}/enroll`, { course_id: courseId });
+        return response.data;
     }
 }
 

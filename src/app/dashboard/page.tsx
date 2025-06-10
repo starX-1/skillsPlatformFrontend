@@ -2,6 +2,7 @@
 'use client';
 import { useUser } from '../context/UserContext';
 import authApi from '@/api/authApi/auth';
+import courseApi from '@/api/courses/courseApi';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import CourseCard from '@/components/dashboard/CourseCard';
 import HourSpendsChart from '@/components/dashboard/HourSpendsChart';
@@ -9,17 +10,52 @@ import ScoreInExamChart from '@/components/dashboard/ScoreInExamChart';
 import UpcomingExams from '@/components/dashboard/UpcomingExams';
 import { useEffect, useState } from 'react';
 import { FaBook, FaUserGraduate, FaUpload } from 'react-icons/fa';
+interface User {
+    id: string;
+    full_name: string;
+    email: string;
+    role: string;
+}
 
+interface Course {
+    id: string;
+    title: string;
+    description: string;
+    thumbnail_url: string;
+    creator: User;
+    enrolled: number;
+}
+
+interface Enrollment {
+    id: string;
+    user_id: string;
+    course_id: string;
+    enrolled_at: string;
+    course: Course;
+}
 
 
 export default function DashboardHome() {
-    const {user, loading} = useUser();
+    const { user, loading } = useUser();
     const [greeting, setGreeting] = useState('');
+    const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+
     // const [role, setRole] = useState('');
 
 
 
-    
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const response = await courseApi.getMyEnrolledCourses();
+                setEnrollments(response);
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+            }
+        };
+        fetchCourses();
+    }, []); // ← include dependency array!
+
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -28,7 +64,9 @@ export default function DashboardHome() {
         else setGreeting('Good evening');
     }, []);
 
-    console.log(user);
+
+
+    // console.log(courses)
 
 
     return (
@@ -76,9 +114,15 @@ export default function DashboardHome() {
             <div className="space-y-4">
                 <h2 className="text-2xl font-bold text-gray-800">My Courses</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <CourseCard title="Intro to HTML & CSS" instructor="Jane Doe" progress={85} />
-                    <CourseCard title="JavaScript Basics" instructor="John Smith" progress={65} />
-                    <CourseCard title="React for Beginners" instructor="Emily Zhang" progress={40} />
+                    {enrollments.map((enrollment) => (
+                        <CourseCard
+                            key={enrollment.id}
+                            title={enrollment.course.title}
+                            instructor={enrollment.course.creator.full_name}
+                            progress={0}
+                        />
+                    ))}
+
                 </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -28,6 +28,10 @@ class CourseApi {
         const response = await authenticatedInstance.post(`${enrollUrl}/enroll`, { course_id: courseId });
         return response.data;
     }
+    async getMyEnrolledCourses() {
+        const response = await authenticatedInstance.get(`${enrollUrl}/getMyEnrollments`);
+        return response.data;
+    }
 }
 
 const courseApi = new CourseApi();

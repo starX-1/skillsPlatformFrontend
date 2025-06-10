@@ -54,7 +54,8 @@ export default function DashboardHome() {
             }
         };
         fetchCourses();
-    }, []); // ← include dependency array!
+    }, []);
+
 
 
     useEffect(() => {
@@ -86,8 +87,8 @@ export default function DashboardHome() {
                         <FaBook size={24} />
                     </div>
                     <div>
-                        <h2 className="text-sm text-gray-500">Courses</h2>
-                        <p className="text-xl font-bold text-gray-800">12</p>
+                        <h2 className="text-sm text-gray-500">Courses Enrolled</h2>
+                        <p className="text-xl font-bold text-gray-800">{enrollments.length}</p>
                     </div>
                 </div>
 

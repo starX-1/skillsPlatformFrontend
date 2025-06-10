@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 'use client';
 import { useUser } from '../context/UserContext';
-import authApi from '@/api/authApi/auth';
+// import authApi from '@/api/authApi/auth';
 import courseApi from '@/api/courses/courseApi';
 import CalendarWidget from '@/components/dashboard/CalendarWidget';
 import CourseCard from '@/components/dashboard/CourseCard';
@@ -36,7 +36,7 @@ interface Enrollment {
 
 
 export default function DashboardHome() {
-    const { user, loading } = useUser();
+    const { user } = useUser();
     const [greeting, setGreeting] = useState('');
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 

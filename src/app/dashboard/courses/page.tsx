@@ -31,7 +31,7 @@ interface User {
 
 export default function CoursesPage() {
     const [courses, setCourses] = useState<Course[]>([]);
-    const { user, loading } = useUser();
+    const { user } = useUser();
     // const [role, setRole] = useState('');\
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);

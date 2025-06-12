@@ -8,6 +8,7 @@ import CourseCard from '@/components/dashboard/CourseCard';
 import HourSpendsChart from '@/components/dashboard/HourSpendsChart';
 import ScoreInExamChart from '@/components/dashboard/ScoreInExamChart';
 import UpcomingExams from '@/components/dashboard/UpcomingExams';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaBook, FaUserGraduate, FaUpload } from 'react-icons/fa';
 interface User {
@@ -116,12 +117,17 @@ export default function DashboardHome() {
                 <h2 className="text-2xl font-bold text-gray-800">My Courses</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {enrollments.map((enrollment) => (
-                        <CourseCard
+                        <Link
                             key={enrollment.id}
-                            title={enrollment.course.title}
-                            instructor={enrollment.course.creator.full_name}
-                            progress={0}
-                        />
+                            href={'/dashboard/courses/' + enrollment.course.id}
+                        >
+                            <CourseCard
+                                key={enrollment.id}
+                                title={enrollment.course.title}
+                                instructor={enrollment.course.creator.full_name}
+                                progress={0}
+                            />
+                        </Link>
                     ))}
 
                 </div>

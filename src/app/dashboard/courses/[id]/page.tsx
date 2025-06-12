@@ -10,9 +10,11 @@ import { CiEdit } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
 // import { CgAdd } from 'react-icons/cg';
 import { IoIosAdd } from 'react-icons/io';
+import moduleApi from '@/api/modules/moduleApi';
+import Link from 'next/link';
 
 interface Course {
-  id: number;
+  id: string;
   title: string;
   description: string;
   thumbnail_url: string;
@@ -25,6 +27,12 @@ interface Course {
   enrolled: number;
   created_at: string;
 }
+interface Module {
+  id: number;
+  title: string;
+  module_order: number;
+  course_id: number;
+}
 
 export default function CourseDetailsPage() {
   const params = useParams();
@@ -34,6 +42,7 @@ export default function CourseDetailsPage() {
   const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
+  const [modules, setModules] = useState<Module[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -53,6 +62,19 @@ export default function CourseDetailsPage() {
     fetchCourse();
   }, [id]);
 
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const res = await moduleApi.getByCourseId(course?.id as string);
+        setModules(res.modules);
+      } catch (error) {
+        console.error('Error fetching modules:', error);
+      }
+    }
+
+    fetchModules();
+  }, [course])
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
@@ -69,6 +91,7 @@ export default function CourseDetailsPage() {
     );
   }
 
+  console.log(modules)
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* edit course button if user is admin */}
@@ -104,9 +127,25 @@ export default function CourseDetailsPage() {
           <div>
             <strong>Created By:</strong> {course.creator.full_name} ({course.creator.email})
           </div>
+          {/* a sectin to display modules for this particular course  */}
           <div>
-            <strong>Enrolled:</strong> {course.enrolled} students
+            <strong>Modules Offered:</strong>
+            <ul className="list-disc pl-4">
+              {modules.map((module) => (
+                <li key={module.id}>
+                  <Link
+                    className='text-blue-600 hover:underline'
+                    href={`/dashboard/courses/${course.id}/modules/${module.id}`}
+                  >
+                    {module.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
+          {/* <div>
+            <strong>Enrolled:</strong> {course.enrolled} students
+          </div> */}
           <div>
             <strong>Created At:</strong> {new Date(course.created_at).toLocaleDateString()}
           </div>

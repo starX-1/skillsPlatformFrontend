@@ -55,6 +55,15 @@ export default function EditCourseForm() {
             setThumbnailPreview(URL.createObjectURL(file));
         }
     };
+    const UpdateImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setThumbnail(file);
+            const { thumbnailUrl: uploadedUrl } = await courseApi.uploadThumbNail(file);
+            setThumbnailPreview(uploadedUrl);
+        }
+    }
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,15 +74,20 @@ export default function EditCourseForm() {
         setLoading(true);
 
         try {
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
-            // formData.append('category', category);
-            if (thumbnail) {
-                formData.append('thumbnail', thumbnail);
-            }
+            // const formData = new FormData();
+            // formData.append('title', title);
+            // formData.append('description', description);
+            // // formData.append('category', category);
+            // if (thumbnail) {
+            //     formData.append('thumbnail', thumbnail);
+            // }
 
-            await courseApi.updateCourse(id as string, formData);
+            // console.log(formData);
+            await courseApi.updateCourse(id as string, {
+                title,
+                description,
+                thumbnail_url: thumbnailPreview
+            });
             toast.success('Course updated successfully!');
             router.push(`/dashboard/courses/${id}`);
         } catch (err) {

@@ -111,7 +111,7 @@ export default function CoursesPage() {
                                 {user?.role === 'admin' ? (
 
                                     <Link
-                                        href={`/dashboard/courses/edit/${course.id}`}
+                                        href={`/dashboard/courses/${course.id}/edit`}
                                         className="flex items-center gap-2 mt-2 text-blue-600 text-sm border border-amber-500 p-2 rounded-md font-bold hover:bg-amber-500 hover:text-white"
                                     >
                                         <AiOutlineEdit />

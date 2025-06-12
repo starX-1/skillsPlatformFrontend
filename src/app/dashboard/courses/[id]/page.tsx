@@ -5,6 +5,9 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import courseApi from '@/api/courses/courseApi';
 import { Loader2 } from 'lucide-react';
+import { useUser } from '@/app/context/UserContext';
+import { CiEdit } from 'react-icons/ci';
+import { useRouter } from 'next/navigation';
 
 interface Course {
   id: number;
@@ -24,7 +27,9 @@ interface Course {
 export default function CourseDetailsPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : null;
-
+  const user = useUser();
+  // console.log(user.user)
+  const router = useRouter();
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,6 +69,20 @@ export default function CourseDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
+      {/* edit course button if user is admin */}
+      {user?.user?.role === 'admin' && (
+        <div className="flex justify-end items-center gap-2 mt-6">
+          <button
+            className="bg-gray-100 flex items-center justify-center gap-2 border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 hover:text-white"
+            onClick={() => router.push(`/dashboard/courses/${course.id}/edit`)}
+          >
+            <CiEdit className="w-5 h-5" />
+            Edit Course
+          </button>
+        </div>
+      )}
+
+
       <div className="rounded-xl overflow-hidden shadow border border-gray-200">
         <Image
           src={course.thumbnail_url || '/default-course.jpg'}

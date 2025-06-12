@@ -114,7 +114,7 @@ export default function EditCourseForm() {
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full mt-1 border border-gray-300 rounded-lg p-2"
+                        className="w-full mt-1 border border-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-lg p-2"
                     />
                 </div>
 
@@ -124,7 +124,7 @@ export default function EditCourseForm() {
                         value={description}
                         rows={4}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full mt-1 border border-gray-300 rounded-lg p-2"
+                        className="w-full mt-1 border border-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-lg p-2"
                     />
                 </div>
 
@@ -134,7 +134,7 @@ export default function EditCourseForm() {
                         type="text"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full mt-1 border border-gray-300 rounded-lg p-2"
+                        className="w-full mt-1 border border-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-lg p-2"
                     />
                 </div> */}
 

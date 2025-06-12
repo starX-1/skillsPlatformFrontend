@@ -8,6 +8,8 @@ import { Loader2 } from 'lucide-react';
 import { useUser } from '@/app/context/UserContext';
 import { CiEdit } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
+// import { CgAdd } from 'react-icons/cg';
+import { IoIosAdd } from 'react-icons/io';
 
 interface Course {
   id: number;
@@ -108,6 +110,18 @@ export default function CourseDetailsPage() {
           <div>
             <strong>Created At:</strong> {new Date(course.created_at).toLocaleDateString()}
           </div>
+          {user?.user?.role === 'admin' && (
+            <div>
+              <button
+                className="flex items-center justify-center gap-2 bg-gray-100 border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white"
+                onClick={() => router.push(`/dashboard/courses/${course.id}/AddModule`)}
+              >
+                <IoIosAdd className="w-5 h-5" />
+                Add Module
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
     </div>

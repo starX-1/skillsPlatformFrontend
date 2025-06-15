@@ -12,7 +12,10 @@ class ModuleApi {
         const response = await instance.get(`${url}/${course_id}`);
         return response.data;
     }
-
+    async getById(course_id: string, module_id: string) {
+        const response = await authenticatedInstance.get(`${url}/${course_id}/${module_id}`);
+        return response.data.module || {};
+    }
 }
 
 export default new ModuleApi();

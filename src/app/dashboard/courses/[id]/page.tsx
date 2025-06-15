@@ -135,7 +135,10 @@ export default function CourseDetailsPage() {
                 <li key={module.id}>
                   <Link
                     className='text-blue-600 hover:underline'
-                    href={`/dashboard/courses/${course.id}/modules/${module.id}`}
+                    href={{
+                      pathname: `/dashboard/modules/${module.id}`,
+                      query: { courseId: course.id },
+                    }}
                   >
                     {module.title}
                   </Link>

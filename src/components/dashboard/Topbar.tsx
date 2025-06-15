@@ -4,15 +4,21 @@ import { Bell, Menu, Search, User } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 function formatPathname(pathname: string) {
-    const parts = pathname.split('/').filter(Boolean); // remove empty segments
-    if (parts.length === 1) return 'Dashboard';
+    const parts = pathname.split('/').filter(Boolean);
+
+    if (parts.length <= 1) return 'Dashboard';
+
     return parts
         .slice(1) // skip 'dashboard'
-        .map((part) =>
-            part
+        .map((part) => {
+            // Replace long/unknown strings (likely IDs) with generic word
+            if (part.length > 15 && !part.includes('-')) return 'Item';
+            if (part.match(/^[a-z0-9\-]{10,}$/)) return 'Item';
+
+            return part
                 .replace(/-/g, ' ')
-                .replace(/\b\w/g, (char) => char.toUpperCase())
-        )
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+        })
         .join(' / ');
 }
 

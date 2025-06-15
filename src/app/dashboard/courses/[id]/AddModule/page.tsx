@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 // import toast, { Toaster } from 'react-hot-toast';
 // import { useUser } from '@/app/context/UserContext';
 import { useUser } from '@/app/context/UserContext';

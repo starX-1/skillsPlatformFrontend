@@ -2,13 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import courseApi from '@/api/courses/courseApi';
 import { useUser } from '@/app/context/UserContext';
 import { toast } from 'react-toastify';
-
-// const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 interface Course {
     id: number;
@@ -23,11 +20,9 @@ export default function EditCourseForm() {
     const router = useRouter();
     const { user } = useUser();
 
-    const [course, setCourse] = useState<Course | null>(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     // const [category, setCategory] = useState('');
-    const [thumbnail, setThumbnail] = useState<File | null>(null);
     const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
     const [loading, setLoading] = useState(false);
 
@@ -35,12 +30,11 @@ export default function EditCourseForm() {
         const fetchCourse = async () => {
             try {
                 const res = await courseApi.getCourseById(id as string);
-                setCourse(res.course);
                 setTitle(res.course.title);
                 setDescription(res.course.description);
                 // setCategory(res.course.category);
                 setThumbnailPreview(res.course.thumbnail_url);
-            } catch (err) {
+            } catch {
                 toast.error('Failed to load course');
             }
         };
@@ -51,19 +45,9 @@ export default function EditCourseForm() {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setThumbnail(file);
             setThumbnailPreview(URL.createObjectURL(file));
         }
     };
-    const UpdateImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setThumbnail(file);
-            const { thumbnailUrl: uploadedUrl } = await courseApi.uploadThumbNail(file);
-            setThumbnailPreview(uploadedUrl);
-        }
-    }
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,15 +58,6 @@ export default function EditCourseForm() {
         setLoading(true);
 
         try {
-            // const formData = new FormData();
-            // formData.append('title', title);
-            // formData.append('description', description);
-            // // formData.append('category', category);
-            // if (thumbnail) {
-            //     formData.append('thumbnail', thumbnail);
-            // }
-
-            // console.log(formData);
             await courseApi.updateCourse(id as string, {
                 title,
                 description,

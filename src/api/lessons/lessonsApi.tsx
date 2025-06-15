@@ -4,7 +4,7 @@ import authenticatedInstance from "@/utils/authenticatedInstance";
 const url = '/api/lessons';
 
 class Lesson {
-    async createLesson(data: any, module_id: string) {
+    async createLesson(data: {title: string, lesson_order: number, content: string, video_url: string}, module_id: string) {
         const response = await authenticatedInstance.post(`${url}/${module_id}`, data);
         return response.data;
     }

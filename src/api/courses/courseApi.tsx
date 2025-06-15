@@ -36,7 +36,7 @@ class CourseApi {
         const response = await instance.get(`${url}/getCourse/${id}`);
         return response.data;
     }
-    async updateCourse(id: string, data: any) {
+    async updateCourse(id: string, data: { title: string, description: string, thumbnail_url: string }) {
         const response = await authenticatedInstance.put(`${url}/updateCourse/${id}`, data);
         return response.data;
     }

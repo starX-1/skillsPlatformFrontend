@@ -76,7 +76,7 @@ export default function ModulePage() {
 
     if (loading) {
         return (
-            <div className="text-center py-10 text-gray-600">
+            <div className="flex items-center justify-center min-h-[40vh]">
                 <Loader2 className="animate-spin w-6 h-6 text-blue-600" />
             </div>
         );
@@ -85,7 +85,7 @@ export default function ModulePage() {
     if (!moduleData) {
         return (
             <div className="text-center py-10 text-red-500">
-                Failed to load module data. Make sure you're enrolled in this course.
+                Failed to load module data. Make sure you&apos;re enrolled in this course.
             </div>
         );
     }

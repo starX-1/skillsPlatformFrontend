@@ -7,13 +7,13 @@ import courseApi from '@/api/courses/courseApi';
 import { useUser } from '@/app/context/UserContext';
 import { toast } from 'react-toastify';
 
-interface Course {
-    id: number;
-    title: string;
-    description: string;
-    thumbnail_url: string;
-    // category: string;
-}
+// interface Course {
+//     id: number;
+//     title: string;
+//     description: string;
+//     thumbnail_url: string;
+//     // category: string;
+// }
 
 export default function EditCourseForm() {
     const { id } = useParams();

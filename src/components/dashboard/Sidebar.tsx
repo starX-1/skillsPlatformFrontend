@@ -1,7 +1,9 @@
 'use client';
+import authApi from '@/api/authApi/auth';
+import { useUser } from '@/app/context/UserContext';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     FaTachometerAlt,
     FaBook,
@@ -28,6 +30,18 @@ export default function Sidebar({
     setSidebarOpen: (open: boolean) => void;
 }) {
     const pathname = usePathname();
+
+    const router = useRouter();
+    const { setUser } = useUser();
+    const handleLogout = async () => {
+        try {
+            await authApi.logoutUser();
+            setUser(null); // Clear user from context if applicable
+            router.push('/login'); // Redirect to login page
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     return (
         <>
@@ -77,7 +91,9 @@ export default function Sidebar({
 
                 {/* Log Out - Now at the bottom */}
                 <div className="px-4 pb-6 mt-auto">
-                    <button className="flex items-center gap-3 w-full px-4 py-2 text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-600">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-4 py-2 text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-600">
                         <FaSignOutAlt />
                         Log Out
                     </button>

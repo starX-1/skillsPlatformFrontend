@@ -18,6 +18,10 @@ class AuthApi {
         const response = await authenticatedInstance.get(`${url}/currentUser`);
         return response.data;
     }
+    async logoutUser(){
+        const response = await authenticatedInstance.post(`${url}/logout`);
+        return response.data;
+    }
 }
 
 const authApi = new AuthApi();

@@ -5,36 +5,37 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import lessonsApi from '@/api/lessons/lessonsApi';
 import { toast } from 'react-toastify';
+import { IoAdd } from 'react-icons/io5';
 
 export default function AddLessonPage() {
     const { id: moduleId } = useParams();
     const searchParams = useSearchParams();
     const courseId = searchParams.get('courseId');
     const router = useRouter();
-
+    const [video_url, setVideoUrl] = useState('');
     const [title, setTitle] = useState('');
     const [lessonOrder, setLessonOrder] = useState<number | ''>('');
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleUpload = async (file: File, folder: string) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('folder', folder);
+    // const handleUpload = async (file: File, folder: string) => {
+    //     const formData = new FormData();
+    //     formData.append('file', file);
+    //     formData.append('folder', folder);
 
-        const response = await fetch('/api/uploads/cloudinary', {
-            method: 'POST',
-            body: formData,
-        });
+    //     const response = await fetch('/api/uploads/cloudinary', {
+    //         method: 'POST',
+    //         body: formData,
+    //     });
 
-        if (!response.ok) {
-            throw new Error('Upload failed');
-        }
+    //     if (!response.ok) {
+    //         throw new Error('Upload failed');
+    //     }
 
-        const data = await response.json();
-        return data.secure_url; // assuming your backend returns this
-    };
+    //     const data = await response.json();
+    //     return data.secure_url; // assuming your backend returns this
+    // };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -48,15 +49,21 @@ export default function AddLessonPage() {
             setLoading(true);
 
             // Upload files
-            const contentUrl = await handleUpload(pdfFile, 'lesson-content');
-            const videoUrl = await handleUpload(videoFile, 'lesson-videos');
+            const contentUrl = await lessonsApi.uploadPdf(pdfFile);
+
+            // let videoUrl = '';
+            if (videoFile !== null) {
+                const videoUrl = await lessonsApi.uploadVideo(videoFile);
+                setVideoUrl(videoUrl);
+            }
+            // const videoUrl = await lessonsApi.uploadVideo(videoFile);
 
             // Create lesson
             const payload = {
                 title,
                 lesson_order: lessonOrder || 1,
                 content: contentUrl,
-                video_url: videoUrl,
+                video_url: video_url,
             };
 
             await lessonsApi.createLesson(payload, moduleId as string);
@@ -114,7 +121,7 @@ export default function AddLessonPage() {
                     <input
                         type="file"
                         accept="video/*"
-                        required
+                        // required
                         onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
                         className="mt-1 block w-full text-gray-700"
                     />
@@ -124,9 +131,11 @@ export default function AddLessonPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+                        className="w-full text-blue-600 border border-blue-600 px-4 py-2 rounded hover:bg-blue-600 hover:text-white transition flex items-center justify-center gap-2"
                     >
                         {loading && <Loader2 className="animate-spin w-4 h-4" />}
+                        {/* < */}
+                        <IoAdd className="text-xl" />
                         Create Lesson
                     </button>
                 </div>

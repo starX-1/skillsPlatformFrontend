@@ -7,6 +7,7 @@ import lessonsApi from '@/api/lessons/lessonsApi';
 import moduleApi from '@/api/modules/moduleApi';
 import courseApi from '@/api/courses/courseApi';
 import { Loader2 } from 'lucide-react';
+import { IoIosAdd } from 'react-icons/io';
 
 interface Lesson {
     id: string;
@@ -147,9 +148,10 @@ export default function ModulePage() {
             <div className="mt-8 text-right">
                 <Link
                     href={`/dashboard/modules/${moduleId}/Addlesson?courseId=${course_id}`}
-                    className="bg-gray-100 text-blue-600 border border-blue-600 px-4 py-2 rounded hover:bg-blue-700 hover:text-white transition"
+                    className="inline-flex items-center gap-2 bg-gray-100 text-blue-600 border border-blue-600 px-4 py-2 rounded hover:bg-blue-700 hover:text-white transition"
                 >
-                    + Add Lesson
+                    <IoIosAdd className="text-xl" />
+                    <span>Add Lesson</span>
                 </Link>
             </div>
         </div>

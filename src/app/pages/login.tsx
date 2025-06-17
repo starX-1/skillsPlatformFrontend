@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'react-toastify';
 import authApi from '@/api/authApi/auth';
+import { useUser } from '../context/UserContext';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setUser } = useUser()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ export default function LoginPage() {
       const response = await authApi.login(email, password); // 
       setLoading(false);
       console.log('Login response:', response);
-
+      setUser(response.user)
       toast.success(response.message || 'Login successful');
 
       // Redirect after successful login

@@ -8,6 +8,7 @@ import moduleApi from '@/api/modules/moduleApi';
 import courseApi from '@/api/courses/courseApi';
 import { Loader2 } from 'lucide-react';
 import { IoIosAdd } from 'react-icons/io';
+import { useUser } from '@/app/context/UserContext';
 
 interface Lesson {
     id: string;
@@ -40,6 +41,8 @@ export default function ModulePage() {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [lessonsMessage, setLessonsMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const user = useUser();
+
 
     useEffect(() => {
         if (!moduleId || !course_id) return;
@@ -145,15 +148,18 @@ export default function ModulePage() {
             </div>
 
             {/* Add Lesson Button */}
-            <div className="mt-8 text-right">
-                <Link
-                    href={`/dashboard/modules/${moduleId}/Addlesson?courseId=${course_id}`}
-                    className="inline-flex items-center gap-2 bg-gray-100 text-blue-600 border border-blue-600 px-4 py-2 rounded hover:bg-blue-700 hover:text-white transition"
-                >
-                    <IoIosAdd className="text-xl" />
-                    <span>Add Lesson</span>
-                </Link>
-            </div>
+            {user.user?.role === 'admin' && (
+                <div className="mt-8 text-right">
+                    <Link
+                        href={`/dashboard/modules/${moduleId}/Addlesson?courseId=${course_id}`}
+                        className="inline-flex items-center gap-2 bg-gray-100 text-blue-600 border border-blue-600 px-4 py-2 rounded hover:bg-blue-700 hover:text-white transition"
+                    >
+                        <IoIosAdd className="text-xl" />
+                        <span>Add Lesson</span>
+                    </Link>
+                </div>
+            )
+            }
         </div>
     );
 }

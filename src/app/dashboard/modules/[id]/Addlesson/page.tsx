@@ -12,7 +12,7 @@ export default function AddLessonPage() {
     const searchParams = useSearchParams();
     const courseId = searchParams.get('courseId');
     const router = useRouter();
-    const [video_url, setVideoUrl] = useState('');
+    // const [video_url, setVideoUrl] = useState('');
     const [title, setTitle] = useState('');
     const [lessonOrder, setLessonOrder] = useState<number | ''>('');
     const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -40,7 +40,7 @@ export default function AddLessonPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title || !moduleId || !courseId || !pdfFile || !videoFile) {
+        if (!title || !moduleId || !courseId || !pdfFile) {
             toast.error('Please fill in all fields and select both files.');
             return;
         }
@@ -51,10 +51,10 @@ export default function AddLessonPage() {
             // Upload files
             const contentUrl = await lessonsApi.uploadPdf(pdfFile);
 
-            // let videoUrl = '';
+            let videoUrl = '';
             if (videoFile !== null) {
-                const videoUrl = await lessonsApi.uploadVideo(videoFile);
-                setVideoUrl(videoUrl);
+                videoUrl = await lessonsApi.uploadVideo(videoFile);
+                // setVideoUrl(videoUrl);
             }
             // const videoUrl = await lessonsApi.uploadVideo(videoFile);
 
@@ -62,8 +62,8 @@ export default function AddLessonPage() {
             const payload = {
                 title,
                 lesson_order: lessonOrder || 1,
-                content: contentUrl,
-                video_url: video_url,
+                content: contentUrl.pdfUrl,
+                video_url: videoUrl,
             };
 
             await lessonsApi.createLesson(payload, moduleId as string);

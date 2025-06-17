@@ -120,19 +120,19 @@ export default function ModulePage() {
                     <ul className="space-y-4">
                         {lessons
                             .sort((a, b) => (a.lesson_order || 0) - (b.lesson_order || 0))
-                            .map((lesson, index) => (
+                            .map((lesson) => (
                                 <li
                                     key={lesson.id}
-                                    className="border border-gray-200 p-4 rounded-lg hover:border-blue-400 transition"
+                                    className="border border-gray-200 p-4 rounded-lg hover:border-amber-500 transition"
                                 >
                                     <Link href={`/dashboard/lessons/${lesson.id}`}>
                                         <div className="flex justify-between items-center">
                                             <div>
                                                 <p className="font-medium text-blue-600">
-                                                    {index + 1}. {lesson.title}
+                                                    {lesson.title}
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    Order: {lesson.lesson_order ?? 'N/A'}
+                                                    Lesson Number: {lesson.lesson_order ?? 'N/A'}
                                                 </p>
                                             </div>
                                             <span className="text-sm text-gray-400">View &rarr;</span>

@@ -1,4 +1,5 @@
 import authenticatedInstance from "@/utils/authenticatedInstance";
+import imagesInstance from "@/utils/imageupload";
 // import instance from "@/utils/axios";
 
 const url = '/api/lessons';
@@ -9,7 +10,9 @@ class Lesson {
     async uploadPdf(file: File) {
         const formData = new FormData();
         formData.append('pdf', file);
-        const response = await authenticatedInstance.post(`${pdfUrl}/upload`, formData);
+
+        console.log(formData.get('pdf'));
+        const response = await imagesInstance.post(`${pdfUrl}/upload`, formData);
         return response.data;
 
     }

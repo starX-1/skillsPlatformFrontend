@@ -70,9 +70,9 @@ export default function AddLessonPage() {
 
             toast.success('Lesson added successfully!');
             router.push(`/dashboard/modules/${moduleId}?courseId=${courseId}`);
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error creating lesson:', error);
-            toast.error(error?.message || 'Failed to create lesson.');
+            toast.error('Failed to create lesson.');
         } finally {
             setLoading(false);
         }

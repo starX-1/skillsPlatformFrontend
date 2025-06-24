@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import lessonsApi from '@/api/lessons/lessonsApi';
 import moduleApi from '@/api/modules/moduleApi';
 import courseApi from '@/api/courses/courseApi';
-import { Loader2, ChevronDown, ChevronRight, FileText, Video, Download } from 'lucide-react';
+import { Loader2, ChevronDown, ChevronRight, FileText, Video, Download, Eye } from 'lucide-react';
 import { IoIosAdd } from 'react-icons/io';
 import { useUser } from '@/app/context/UserContext';
 
@@ -49,6 +49,7 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
 }) => {
     const [materials, setMaterials] = useState<Material[]>([]);
     const [loadingMaterials, setLoadingMaterials] = useState(false);
+    const [showPdfPreview, setShowPdfPreview] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         if (isExpanded && materials.length === 0) {
@@ -78,6 +79,13 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
         }
     }, [isExpanded]);
 
+    const togglePdfPreview = (materialId: string) => {
+        setShowPdfPreview(prev => ({
+            ...prev,
+            [materialId]: !prev[materialId]
+        }));
+    };
+
     const renderMaterialPreview = (material: Material) => {
         switch (material.type) {
             case 'pdf':
@@ -89,10 +97,17 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                                 <h4 className="font-medium text-gray-800">{material.title}</h4>
                                 <div className="mt-3 flex gap-2">
                                     <button
-                                        className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                                        className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition flex items-center gap-1"
+                                        onClick={() => togglePdfPreview(material.id)}
+                                    >
+                                        <Eye className="w-3 h-3" />
+                                        {showPdfPreview[material.id] ? 'Hide Preview' : 'Show Preview'}
+                                    </button>
+                                    <button
+                                        className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
                                         onClick={() => window.open(material.url, '_blank')}
                                     >
-                                        Preview PDF
+                                        Open in New Tab
                                     </button>
                                     <button
                                         className="text-sm bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 transition flex items-center gap-1"
@@ -109,13 +124,15 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-4 bg-white border rounded p-2">
-                            <iframe
-                                src={`${material.url}#toolbar=0`}
-                                className="w-full h-64 border-0"
-                                title={`Preview of ${material.title}`}
-                            />
-                        </div>
+                        {showPdfPreview[material.id] && (
+                            <div className="mt-4 bg-white border rounded p-2">
+                                <iframe
+                                    src={`${material.url}#toolbar=0`}
+                                    className="w-full h-64 border-0"
+                                    title={`Preview of ${material.title}`}
+                                />
+                            </div>
+                        )}
                     </div>
                 );
 
@@ -166,7 +183,7 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                             </p>
                         </div>
                     </div>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-amber-500">
                         {isExpanded ? 'Collapse' : 'Expand'}
                     </span>
                 </div>

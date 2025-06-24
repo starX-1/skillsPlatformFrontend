@@ -24,7 +24,8 @@ interface Lesson {
     description: string;
     lesson_order: number;
     module_id: string;
-    materials?: Material[]; // Add materials to lesson interface
+    content: string;
+    video_url: string;
 }
 
 interface Course {
@@ -41,7 +42,6 @@ interface Module {
     module_order: number;
 }
 
-// New component for lesson panel
 const LessonPanel = ({ lesson, isExpanded, onToggle }: {
     lesson: Lesson;
     isExpanded: boolean;
@@ -50,44 +50,33 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
     const [materials, setMaterials] = useState<Material[]>([]);
     const [loadingMaterials, setLoadingMaterials] = useState(false);
 
-    // Fetch materials when lesson is expanded for the first time
     useEffect(() => {
         if (isExpanded && materials.length === 0) {
-            fetchLessonMaterials();
-        }
-    }, [isExpanded]);
+            setLoadingMaterials(true);
+            const fetchedMaterials: Material[] = [];
 
-    const fetchLessonMaterials = async () => {
-        setLoadingMaterials(true);
-        try {
-            // Replace with your actual API call to fetch lesson materials
-            // const materialsRes = await lessonsApi.getLessonMaterials(lesson.id);
-            // setMaterials(materialsRes.materials || []);
-
-            // Mock data for demonstration - replace with actual API call
-            const mockMaterials: Material[] = [
-                {
-                    id: '1',
-                    title: 'Introduction to React.pdf',
+            if (lesson.content) {
+                fetchedMaterials.push({
+                    id: `${lesson.id}-pdf`,
+                    title: `${lesson.title} PDF Material`,
                     type: 'pdf',
-                    url: '/materials/react-intro.pdf',
-                    description: 'Basic concepts and getting started guide'
-                },
-                {
-                    id: '2',
-                    title: 'React Components Tutorial',
+                    url: lesson.content,
+                });
+            }
+
+            if (lesson.video_url) {
+                fetchedMaterials.push({
+                    id: `${lesson.id}-video`,
+                    title: `${lesson.title} Video Lesson`,
                     type: 'video',
-                    url: '/materials/react-components.mp4',
-                    description: 'Video tutorial on React components'
-                }
-            ];
-            setMaterials(mockMaterials);
-        } catch (error) {
-            console.error('Failed to fetch lesson materials:', error);
-        } finally {
+                    url: lesson.video_url,
+                });
+            }
+
+            setMaterials(fetchedMaterials);
             setLoadingMaterials(false);
         }
-    };
+    }, [isExpanded]);
 
     const renderMaterialPreview = (material: Material) => {
         switch (material.type) {
@@ -98,9 +87,6 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                             <FileText className="w-8 h-8 text-red-500 flex-shrink-0 mt-1" />
                             <div className="flex-1">
                                 <h4 className="font-medium text-gray-800">{material.title}</h4>
-                                {material.description && (
-                                    <p className="text-sm text-gray-600 mt-1">{material.description}</p>
-                                )}
                                 <div className="mt-3 flex gap-2">
                                     <button
                                         className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
@@ -123,7 +109,6 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                                 </div>
                             </div>
                         </div>
-                        {/* PDF Preview embed - you might want to use a PDF viewer library */}
                         <div className="mt-4 bg-white border rounded p-2">
                             <iframe
                                 src={`${material.url}#toolbar=0`}
@@ -141,12 +126,8 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                             <Video className="w-8 h-8 text-blue-500 flex-shrink-0 mt-1" />
                             <div className="flex-1">
                                 <h4 className="font-medium text-gray-800">{material.title}</h4>
-                                {material.description && (
-                                    <p className="text-sm text-gray-600 mt-1">{material.description}</p>
-                                )}
                             </div>
                         </div>
-                        {/* Video Preview */}
                         <div className="bg-white border rounded overflow-hidden">
                             <video
                                 controls
@@ -161,33 +142,12 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                 );
 
             default:
-                return (
-                    <div className="bg-gray-50 rounded-lg p-4 border">
-                        <div className="flex items-center gap-3">
-                            <FileText className="w-6 h-6 text-gray-500" />
-                            <div>
-                                <h4 className="font-medium text-gray-800">{material.title}</h4>
-                                {material.description && (
-                                    <p className="text-sm text-gray-600">{material.description}</p>
-                                )}
-                                <a
-                                    href={material.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-blue-600 hover:text-blue-800 mt-2 inline-block"
-                                >
-                                    Open Material →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                );
+                return null;
         }
     };
 
     return (
         <div className="border border-gray-200 rounded-lg overflow-hidden">
-            {/* Clickable lesson header */}
             <div
                 className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={onToggle}
@@ -212,7 +172,6 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                 </div>
             </div>
 
-            {/* Collapsible content panel */}
             {isExpanded && (
                 <div className="border-t border-gray-200 p-4 bg-gray-50">
                     {lesson.description && (
@@ -278,14 +237,11 @@ export default function ModulePage() {
 
         const fetchData = async () => {
             try {
-                // Get module info
                 const moduleRes = await moduleApi.getById(course_id, moduleId as string);
                 setModuleData(moduleRes);
 
-                // Get lessons
                 const lessonsRes = await lessonsApi.getLessonsByModuleId(moduleId as string, course_id as string);
 
-                // get course 
                 const courseRes = await courseApi.getCourseById(course_id as string);
                 setCourse(courseRes.course);
 
@@ -324,12 +280,10 @@ export default function ModulePage() {
 
     return (
         <div className="max-w-4xl mx-auto px-6 py-8">
-            {/* Course Info */}
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">{course?.title}</h1>
             </div>
 
-            {/* Module Info */}
             <div className="mb-6">
                 <h2 className="text-3xl font-bold text-gray-800">{moduleData.title}</h2>
                 <p className="text-gray-600 mt-2">
@@ -337,7 +291,6 @@ export default function ModulePage() {
                 </p>
             </div>
 
-            {/* Lessons Accordion */}
             <div className="bg-white shadow-sm rounded-lg p-6">
                 <h2 className="text-xl font-semibold mb-4">Lessons</h2>
 
@@ -359,7 +312,6 @@ export default function ModulePage() {
                 )}
             </div>
 
-            {/* Add Lesson Button */}
             {user.user?.role === 'admin' && (
                 <div className="mt-8 text-right">
                     <Link

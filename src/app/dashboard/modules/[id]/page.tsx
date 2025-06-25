@@ -11,6 +11,7 @@ import { IoIosAdd } from 'react-icons/io';
 import { useUser } from '@/app/context/UserContext';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
 
 interface Material {
     id: string;
@@ -51,16 +52,51 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
 }) => {
     const [materials, setMaterials] = useState<Material[]>([]);
     const [loadingMaterials, setLoadingMaterials] = useState(false);
+    const user = useUser();
+    const searchParams = useSearchParams();
+    const course_id = searchParams.get('courseId');
     const [showPdfPreview, setShowPdfPreview] = useState<{ [key: string]: boolean }>({});
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLessonComplete, setIsLessonComplete] = useState(false);
     const [pendingCompletionState, setPendingCompletionState] = useState<boolean | null>(null);
 
     const handleConfirm = () => {
-        // Call backend API or state update here
-        setIsLessonComplete(true);
+        if (pendingCompletionState !== null) {
+            setIsLessonComplete(pendingCompletionState);
+        }
+        if (!course_id) {
+            toast.error('Course not found');
+            return;
+        }
+        // call the backend to send the data 
+        const response = lessonsApi.markAsComplete(lesson.id, course_id);
+        toast.success(response);
+        setPendingCompletionState(null);
         setShowConfirm(false);
     };
+
+    const handleCancel = () => {
+        setPendingCompletionState(null);
+        setShowConfirm(false);
+    };
+
+    useEffect(() => {
+        const fetchUserCompletedLessons = async () => {
+            try {
+                const response = await lessonsApi.getUserCompletedLessons(course_id as string);
+                const completed = response.some((item: any) => item.lesson_id === lesson.id);
+                setIsLessonComplete(completed);
+            } catch (error) {
+                console.error('Error fetching user completed lessons:', error);
+            }
+        };
+
+        if (course_id) {
+            fetchUserCompletedLessons();
+        }
+    }, [course_id, lesson.id]);
+
+
 
 
     useEffect(() => {
@@ -214,68 +250,64 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
                         <h4 className="font-medium text-gray-800 mb-3">Materials</h4>
 
                         {/* check box to click if the lesson is complete  */}
-                        <div className="flex items-center mb-3">
+                        {user?.user?.role !== 'admin' && user?.user?.role !== 'superadmin' && (
                             <div className="flex items-center mb-3">
-                                <input
-                                    type="checkbox"
-                                    id="lessonComplete"
-                                    checked={isLessonComplete}
-                                    onChange={(e) => {
-                                        setPendingCompletionState(e.target.checked); // true if checking, false if unchecking
-                                        setShowConfirm(true); // open confirmation dialog
-                                    }}
-                                    className="mr-2"
-                                />
-
-                                <label htmlFor="lessonComplete" className="text-amber-500">
-                                    Mark Lesson as Complete
-                                </label>
-                            </div>
-
-                            <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Confirm Completion</DialogTitle>
-                                    </DialogHeader>
-                                    <p>
-                                        Are you sure you want to mark this lesson as complete? <br />
-                                        <span className="text-red-500">This action cannot be undone!!</span>
-                                    </p>
-                                    <DialogFooter>
-                                        <Button
-                                            variant="outline"
-                                            className="border border-red-500 bg-gray-50 text-red-500 hover:bg-red-500 hover:text-white"
-                                            onClick={() => {
-                                                // Revert checkbox to previous value
-                                                setPendingCompletionState(null);
-                                                setShowConfirm(false);
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-
-                                        <Button
-                                            className="border border-amber-500 bg-gray-50 text-amber-500 hover:bg-amber-500 hover:text-white"
-                                            onClick={() => {
-                                                if (pendingCompletionState !== null) {
-                                                    setIsLessonComplete(pendingCompletionState);
-                                                }
-                                                setPendingCompletionState(null);
-                                                setShowConfirm(false);
-                                            }}
-                                        >
-                                            Yes,I Confirm
-                                        </Button>
-
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                                <div className="flex items-center mb-3">
+                                    <input
+                                        type="checkbox"
+                                        id="lessonComplete"
+                                        checked={isLessonComplete || pendingCompletionState === true}
+                                        disabled={isLessonComplete}
+                                        onChange={(e) => {
+                                            if (!isLessonComplete && e.target.checked) {
+                                                setPendingCompletionState(true);
+                                                setShowConfirm(true);
+                                            }
+                                        }}
+                                        className="mr-2"
+                                    />
 
 
-                            {/* <label htmlFor="lessonComplete" className="text-amber-500">
+                                    <label htmlFor="lessonComplete" className="text-amber-500">
+                                        Mark Lesson as Complete
+                                    </label>
+                                </div>
+
+                                <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Confirm Completion</DialogTitle>
+                                        </DialogHeader>
+                                        <p>
+                                            Are you sure you want to mark this lesson as complete? <br />
+                                            <span className="text-red-500">This action cannot be undone!!</span>
+                                        </p>
+                                        <DialogFooter>
+                                            <Button
+                                                variant="outline"
+                                                className="border border-red-500 bg-gray-50 text-red-500 hover:bg-red-500 hover:text-white"
+                                                onClick={handleCancel}
+                                            >
+                                                Cancel
+                                            </Button>
+
+                                            <Button
+                                                className="border border-amber-500 bg-gray-50 text-amber-500 hover:bg-amber-500 hover:text-white"
+                                                onClick={handleConfirm}
+                                            >
+                                                Yes,I Confirm
+                                            </Button>
+
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+
+
+                                {/* <label htmlFor="lessonComplete" className="text-amber-500">
                                 Mark Lesson as Complete
                             </label> */}
-                        </div>
+                            </div>
+                        )}
 
                         {loadingMaterials ? (
                             <div className="flex items-center justify-center py-8">

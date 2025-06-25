@@ -5,6 +5,7 @@ import imagesInstance from "@/utils/imageupload";
 const url = '/api/lessons';
 const pdfUrl = "/api/pdfs"
 const videoUrl = "/api/videos"
+const completions = '/api/completions'
 
 class Lesson {
     async uploadPdf(file: File) {
@@ -34,6 +35,16 @@ class Lesson {
     }
     async getLessonById(id: string) {
         const response = await authenticatedInstance.get(`${url}/${id}`);
+        return response.data;
+    }
+    async markAsComplete(lesson_id: string, course_id: string) {
+        const response = await authenticatedInstance.post(`${completions}/mark-complete`, { lesson_id, course_id });
+        console.log(response);
+        return response.data;
+    }
+    async getUserCompletedLessons(course_id: string) {
+        const response = await authenticatedInstance.post(`${completions}/get-completed-lessons`, { course_id });
+        console.log(response.data)
         return response.data;
     }
 

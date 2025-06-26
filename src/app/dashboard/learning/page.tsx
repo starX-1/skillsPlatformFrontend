@@ -39,41 +39,54 @@ export default function MyLearningPage() {
 
                 const enriched = await Promise.all(
                     enrolled.map(async (item: any) => {
-                        const modulesRes = await moduleApi.getByCourseId(item.course_id);
+                        const courseId = item.course_id;
+
+                        // Get all modules for the course
+                        const modulesRes = await moduleApi.getByCourseId(courseId);
                         const moduleList = modulesRes.modules || [];
-                        const enrolledRes = await courseApi.getEnrolledUsers(item.course_id);
+
+                        // Get enrolled users
+                        const enrolledRes = await courseApi.getEnrolledUsers(courseId);
                         const enrolledList = enrolledRes || [];
-                        // console.log("enrolelist", enrolledList)
 
-
-                        let lessonCount = 0;
-
+                        // Get all lessons for the course
+                        let lessonIds: string[] = [];
                         for (const module of moduleList) {
-                            const lessonsRes = await lessonsApi.getLessonsByModuleId(module.id, item.course_id);
-
-                            // Only add lessons if they're returned as an array
+                            const lessonsRes = await lessonsApi.getLessonsByModuleId(module.id, courseId);
                             if (Array.isArray(lessonsRes.lessons)) {
-                                lessonCount += lessonsRes.lessons.length;
+                                lessonIds.push(...lessonsRes.lessons.map((lesson: any) => lesson.id));
                             }
                         }
 
+                        // Get completed lessons for this course (POST request with body)
+                        const completedRes = await lessonsApi.getUserCompletedLessons(courseId);
+                        const completedList = Array.isArray(completedRes)
+                            ? completedRes
+                            : Array.isArray(completedRes.lessons)
+                                ? completedRes.lessons
+                                : [];
+
+                        // Count how many of this course's lessons are marked as completed
+                        const completedCountPerCourse = completedList.filter((cl: any) =>
+                            lessonIds.includes(cl.lesson_id)
+                        ).length;
 
                         return {
                             ...item,
                             modules: moduleList.length,
                             enrolled: enrolledList.length,
-                            lessons: lessonCount,
-                            lessonsCompleted: 0, // set properly if needed
+                            lessons: lessonIds.length,
+                            lessonsCompleted: completedCountPerCourse,
                         };
                     })
                 );
-
 
                 setCourses(enriched);
             } catch (error) {
                 console.error('Failed to fetch course details:', error);
             }
         };
+
 
         if (user?.user?.id) {
             fetchCourseData();
@@ -107,11 +120,11 @@ export default function MyLearningPage() {
                                     <span className="font-medium">{course.lessons}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>👥 Students</span>
+                                    <span>👥 All Students</span>
                                     <span className="font-medium">{course.enrolled}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>✅ Completed</span>
+                                    <span>✅ My Completed Lessons</span>
                                     <span className="font-medium">{course.lessonsCompleted}</span>
                                 </div>
                             </div>

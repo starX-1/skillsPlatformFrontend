@@ -8,19 +8,30 @@ import {
     FaTachometerAlt,
     FaBook,
     FaChartBar,
-    FaCalendarAlt,
-    FaCog,
+    FaUserCog,
     FaSignOutAlt,
     FaTimes,
+    FaGraduationCap,
+    FaClipboardCheck,
+    FaQuestionCircle,
+    FaAward,
+    FaUsers,
+    FaLifeRing,
 } from 'react-icons/fa';
 
 const navItems = [
     { label: 'Dashboard', icon: <FaTachometerAlt />, href: '/dashboard' },
-    { label: 'Courses', icon: <FaBook />, href: '/dashboard/courses' },
-    { label: 'Charts', icon: <FaChartBar />, href: '/dashboard/charts' },
-    { label: 'Calendar', icon: <FaCalendarAlt />, href: '/dashboard/calendar' },
-    { label: 'Settings', icon: <FaCog />, href: '/dashboard/settings' },
+    { label: 'Available Courses', icon: <FaBook />, href: '/dashboard/courses' },
+    { label: 'Analytics', icon: <FaChartBar />, href: '/dashboard/analytics' },
+    { label: 'My Learning', icon: <FaGraduationCap />, href: '/dashboard/learning' },
+    { label: 'Submissions', icon: <FaClipboardCheck />, href: '/dashboard/submissions' },
+    { label: 'Quizzes', icon: <FaQuestionCircle />, href: '/dashboard/quizzes' },
+    { label: 'Classmates', icon: <FaUsers />, href: '/dashboard/users' }, // Consider role-based visibility
+    { label: 'Certificates', icon: <FaAward />, href: '/dashboard/certificates' },
+    { label: 'Help Center', icon: <FaLifeRing />, href: '/dashboard/help' },
+    { label: 'Account', icon: <FaUserCog />, href: '/dashboard/settings' },
 ];
+
 
 export default function Sidebar({
     sidebarOpen,
@@ -30,14 +41,14 @@ export default function Sidebar({
     setSidebarOpen: (open: boolean) => void;
 }) {
     const pathname = usePathname();
-
     const router = useRouter();
     const { setUser } = useUser();
+
     const handleLogout = async () => {
         try {
             await authApi.logoutUser();
-            setUser(null); // Clear user from context if applicable
-            router.push('/login'); // Redirect to login page
+            setUser(null);
+            router.push('/login');
         } catch (error) {
             console.error('Logout failed:', error);
         }
@@ -45,7 +56,6 @@ export default function Sidebar({
 
     return (
         <>
-            {/* Overlay for mobile */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
@@ -57,7 +67,7 @@ export default function Sidebar({
                 className={`fixed z-40 top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:block md:flex`}
             >
-                {/* Close button on mobile */}
+                {/* Mobile Top */}
                 <div className="flex items-center justify-between p-4 md:hidden">
                     <Image src="/og-image.svg" alt="Logo" width={200} height={60} />
                     <button
@@ -68,7 +78,7 @@ export default function Sidebar({
                     </button>
                 </div>
 
-                {/* Logo */}
+                {/* Desktop Logo */}
                 <div className="hidden md:flex justify-center p-6">
                     <Image src="/og-image.svg" alt="Logo" width={200} height={60} />
                 </div>
@@ -81,7 +91,7 @@ export default function Sidebar({
                             href={item.href}
                             className={`flex items-center gap-3 px-4 py-2 my-1 rounded-lg transition-colors 
               ${pathname === item.href ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:bg-gray-100'}`}
-                            onClick={() => setSidebarOpen(false)} // Close on mobile
+                            onClick={() => setSidebarOpen(false)}
                         >
                             {item.icon}
                             <span>{item.label}</span>
@@ -89,11 +99,12 @@ export default function Sidebar({
                     ))}
                 </nav>
 
-                {/* Log Out - Now at the bottom */}
+                {/* Logout */}
                 <div className="px-4 pb-6 mt-auto">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 w-full px-4 py-2 text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-600">
+                        className="flex items-center gap-3 w-full px-4 py-2 text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-600"
+                    >
                         <FaSignOutAlt />
                         Log Out
                     </button>

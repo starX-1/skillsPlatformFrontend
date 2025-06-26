@@ -137,7 +137,7 @@ export default function DashboardHome() {
                             <CourseCard
                                 title={enrollment.course.title}
                                 instructor={enrollment.course.creator.full_name}
-                                progress={0}
+                                // progress={0}
                             />
                         </Link>
                     ))}

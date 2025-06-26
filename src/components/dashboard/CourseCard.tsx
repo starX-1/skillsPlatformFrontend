@@ -6,10 +6,10 @@ import { FaBookOpen } from "react-icons/fa";
 type CourseCardProps = {
     title: string;
     instructor: string;
-    progress: number;
+    // progress: number;
 };
 
-export default function CourseCard({ title, instructor, progress }: CourseCardProps) {
+export default function CourseCard({ title, instructor }: CourseCardProps) {
     return (
         <div className="bg-white p-4 rounded-2xl shadow space-y-3">
             <div className="flex items-center gap-3">
@@ -21,10 +21,10 @@ export default function CourseCard({ title, instructor, progress }: CourseCardPr
                     <p className="text-sm text-gray-500">Trainer {instructor}</p>
                 </div>
             </div>
-            <div>
+            {/* <div>
                 <Progress value={progress} />
                 <p className="text-sm text-gray-500 mt-1">{progress}% complete</p>
-            </div>
+            </div> */}
         </div>
     );
 }

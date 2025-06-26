@@ -22,10 +22,10 @@ import {
 const navItems = [
     { label: 'Dashboard', icon: <FaTachometerAlt />, href: '/dashboard' },
     { label: 'Available Courses', icon: <FaBook />, href: '/dashboard/courses' },
-    { label: 'Analytics', icon: <FaChartBar />, href: '/dashboard/analytics' },
     { label: 'My Learning', icon: <FaGraduationCap />, href: '/dashboard/learning' },
     { label: 'Submissions', icon: <FaClipboardCheck />, href: '/dashboard/submissions' },
     { label: 'Quizzes', icon: <FaQuestionCircle />, href: '/dashboard/quizzes' },
+    { label: 'Analytics', icon: <FaChartBar />, href: '/dashboard/analytics' },
     { label: 'Classmates', icon: <FaUsers />, href: '/dashboard/users' }, // Consider role-based visibility
     { label: 'Certificates', icon: <FaAward />, href: '/dashboard/certificates' },
     { label: 'Help Center', icon: <FaLifeRing />, href: '/dashboard/help' },

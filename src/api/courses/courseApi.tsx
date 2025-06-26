@@ -40,6 +40,10 @@ class CourseApi {
         const response = await authenticatedInstance.put(`${url}/updateCourse/${id}`, data);
         return response.data;
     }
+    async getEnrolledUsers(courseId: string) {
+        const response = await authenticatedInstance.get(`${enrollUrl}/getCourseEnrollments/${courseId}`);
+        return response.data;
+    }
 }
 
 const courseApi = new CourseApi();

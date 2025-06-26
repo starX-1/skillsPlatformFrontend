@@ -1,0 +1,131 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import courseApi from '@/api/courses/courseApi';
+import moduleApi from '@/api/modules/moduleApi';
+import lessonsApi from '@/api/lessons/lessonsApi';
+import { useUser } from '@/app/context/UserContext';
+import { VscDebugContinueSmall } from 'react-icons/vsc';
+
+interface EnrolledCourse {
+    id: string;
+    course_id: string;
+    enrolled_at: string;
+    user_id: string;
+    modules: number;
+    lessons: number;
+    lessonsCompleted: number;
+    enrolled: number;
+    course: {
+        id: string;
+        title: string;
+        description: string;
+        thumbnail_url: string;
+        creator?: {
+            full_name: string;
+            email: string;
+        };
+    };
+}
+
+export default function MyLearningPage() {
+    const user = useUser();
+    const [courses, setCourses] = useState<EnrolledCourse[]>([]);
+
+    useEffect(() => {
+        const fetchCourseData = async () => {
+            try {
+                const enrolled = await courseApi.getMyEnrolledCourses();
+
+                const enriched = await Promise.all(
+                    enrolled.map(async (item: any) => {
+                        const modulesRes = await moduleApi.getByCourseId(item.course_id);
+                        const moduleList = modulesRes.modules || [];
+                        const enrolledRes = await courseApi.getEnrolledUsers(item.course_id);
+                        const enrolledList = enrolledRes || [];
+                        // console.log("enrolelist", enrolledList)
+
+
+                        let lessonCount = 0;
+
+                        for (const module of moduleList) {
+                            const lessonsRes = await lessonsApi.getLessonsByModuleId(module.id, item.course_id);
+
+                            // Only add lessons if they're returned as an array
+                            if (Array.isArray(lessonsRes.lessons)) {
+                                lessonCount += lessonsRes.lessons.length;
+                            }
+                        }
+
+
+                        return {
+                            ...item,
+                            modules: moduleList.length,
+                            enrolled: enrolledList.length,
+                            lessons: lessonCount,
+                            lessonsCompleted: 0, // set properly if needed
+                        };
+                    })
+                );
+
+
+                setCourses(enriched);
+            } catch (error) {
+                console.error('Failed to fetch course details:', error);
+            }
+        };
+
+        if (user?.user?.id) {
+            fetchCourseData();
+        }
+    }, [user]);
+
+    return (
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">
+                Total Courses: {courses.length}
+            </h1>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {courses.map((course) => (
+                    <div
+                        key={course.id}
+                        className="bg-white rounded-2xl shadow-md border border-amber-400 p-6 flex flex-col justify-between hover:shadow-lg transition duration-300"
+                    >
+                        <div>
+                            <h2 className="text-xl font-semibold text-blue-700 mb-3">
+                                {course.course?.title}
+                            </h2>
+
+                            <div className="space-y-2 text-gray-700 text-sm">
+                                <div className="flex justify-between">
+                                    <span>📦 Modules</span>
+                                    <span className="font-medium">{course.modules}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>📚 Lessons</span>
+                                    <span className="font-medium">{course.lessons}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>👥 Students</span>
+                                    <span className="font-medium">{course.enrolled}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>✅ Completed</span>
+                                    <span className="font-medium">{course.lessonsCompleted}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            className="mt-6 flex items-center gap-2 justify-center w-full border border-blue-600 hover:bg-blue-600 hover:text-white py-2 px-4 rounded-xl text-sm font-medium transition"
+                        >
+                            Continue Learning
+                            <VscDebugContinueSmall />
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}

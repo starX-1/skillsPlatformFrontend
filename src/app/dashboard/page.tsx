@@ -10,7 +10,7 @@ import ScoreInExamChart from '@/components/dashboard/ScoreInExamChart';
 import UpcomingExams from '@/components/dashboard/UpcomingExams';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FaBook, FaUserGraduate, FaUpload } from 'react-icons/fa';
+import { FaBook, FaUserGraduate, FaUpload, FaArrowRight } from 'react-icons/fa';
 interface User {
     id: string;
     full_name: string;
@@ -98,7 +98,7 @@ export default function DashboardHome() {
                         <FaUserGraduate size={24} />
                     </div>
                     <div>
-                        <h2 className="text-sm text-gray-500">Enrolled Users</h2>
+                        <h2 className="text-sm text-gray-500">Total Classmates</h2>
                         <p className="text-xl font-bold text-gray-800">150</p>
                     </div>
                 </div>
@@ -114,24 +114,36 @@ export default function DashboardHome() {
                 </div>
             </div>
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-gray-800">My Courses</h2>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-gray-800">My Courses</h2>
+
+                    {enrollments.length > 3 && (
+                        <Link
+                            href="/dashboard/learning"
+                            className="flex items-center gap-2 text-sm text-blue-600 hover:underline font-medium"
+                        >
+                            See More
+                            <FaArrowRight size={16} className="ml-1" />
+                        </Link>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {enrollments.map((enrollment) => (
+                    {enrollments.slice(0, 3).map((enrollment) => (
                         <Link
                             key={enrollment.id}
                             href={'/dashboard/courses/' + enrollment.course.id}
                         >
                             <CourseCard
-                                key={enrollment.id}
                                 title={enrollment.course.title}
                                 instructor={enrollment.course.creator.full_name}
                                 progress={0}
                             />
                         </Link>
                     ))}
-
                 </div>
             </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <HourSpendsChart />
                 {/* Score in Exam will go here */}

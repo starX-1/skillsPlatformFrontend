@@ -84,7 +84,7 @@ const LessonPanel = ({ lesson, isExpanded, onToggle }: {
         const fetchUserCompletedLessons = async () => {
             try {
                 const response = await lessonsApi.getUserCompletedLessons(course_id as string);
-                const completed = response.some((item: any) => item.lesson_id === lesson.id);
+                const completed = response.some((item: { lesson_id: string; }) => item.lesson_id === lesson.id);
                 setIsLessonComplete(completed);
             } catch (error) {
                 console.error('Error fetching user completed lessons:', error);

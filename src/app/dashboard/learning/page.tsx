@@ -6,6 +6,7 @@ import moduleApi from '@/api/modules/moduleApi';
 import lessonsApi from '@/api/lessons/lessonsApi';
 import { useUser } from '@/app/context/UserContext';
 import { VscDebugContinueSmall } from 'react-icons/vsc';
+import { useRouter } from 'next/navigation';
 
 interface CourseCreator {
     full_name: string;
@@ -152,9 +153,10 @@ export default function MyLearningPage() {
     const user = useUser();
     const [courses, setCourses] = useState<EnrolledCourse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
 
-    const enrichCourseData = useCallback(async (enrolledCourse: any): Promise<EnrolledCourse> => {
+    const enrichCourseData = useCallback(async (enrolledCourse: EnrolledCourse): Promise<EnrolledCourse> => {
         const courseId = enrolledCourse.course_id;
 
         try {
@@ -181,12 +183,12 @@ export default function MyLearningPage() {
             const lessonResults = await Promise.all(lessonPromises);
             const lessonIds = lessonResults.flatMap(result =>
                 Array.isArray(result.lessons)
-                    ? result.lessons.map((lesson: any) => lesson.id)
+                    ? result.lessons.map((lesson: { id: string; }) => lesson.id)
                     : []
             );
 
             // Count completed lessons for this course
-            const completedCount = completedList.filter((completedLesson: any) =>
+            const completedCount = completedList.filter((completedLesson: { lesson_id: string; }) =>
                 lessonIds.includes(completedLesson.lesson_id)
             ).length;
 
@@ -243,6 +245,7 @@ export default function MyLearningPage() {
 
     const handleContinueLearning = useCallback((courseId: string) => {
         // Navigate to course or implement continue learning logic
+        router.push(`/dashboard/courses/${courseId}`);
         console.log('Continue learning course:', courseId);
         // Example: router.push(`/courses/${courseId}`);
     }, []);
@@ -344,7 +347,9 @@ export default function MyLearningPage() {
                                 <p className="text-gray-600 mb-6">
                                     Start your learning journey by enrolling in your first course!
                                 </p>
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                                <button
+                                    onClick={() => router.push('/dashboard/courses')}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
                                     Browse Courses
                                 </button>
                             </div>

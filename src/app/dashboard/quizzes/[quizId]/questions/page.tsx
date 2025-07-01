@@ -1,12 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+// import axios from 'axios';
+import quizesApi from '@/api/quizes/quizesApi';
+import { useUser } from '@/app/context/UserContext';
 
 const AddQuestionsPage = () => {
     const { quizId } = useParams();
     const router = useRouter();
+    const { user } = useUser();
+    const searchParams = useSearchParams();
+    const course_id = searchParams.get('course_id');
+
 
     const [quizTitle, setQuizTitle] = useState('');
     const [questionText, setQuestionText] = useState('');
@@ -18,14 +24,15 @@ const AddQuestionsPage = () => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await axios.get(`/api/quizzes/quiz/get-by-id/${quizId}`);
-                setQuizTitle(res.data?.quiz?.title || 'Untitled Quiz');
+                const res = await quizesApi.getQuizById(quizId as string);
+                console.log(res);
+                setQuizTitle(res?.title || 'Untitled Quiz');
             } catch (err) {
                 console.error('Failed to load quiz');
             }
         };
         fetchQuiz();
-    }, [quizId]);
+    }, [quizId, user?.id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,13 +46,20 @@ const AddQuestionsPage = () => {
         }
 
         try {
-            const res = await axios.post('/api/questions/create', {
-                quiz_id: quizId,
+            // const res = await axios.post('/api/questions/create', {
+            //     quiz_id: quizId,
+            //     text: questionText,
+            //     type: questionType,
+            // });
+
+            const res = await quizesApi.createQuestion({
+                quiz_id: quizId as string,
+                course_id: course_id as string,
                 text: questionText,
                 type: questionType,
             });
-
-            const createdQuestionId = res.data.id;
+            const createdQuestionId = res.id;
+            console.log(res);
 
             if (questionType === 'multiple_choice') {
                 router.push(`/dashboard/questions/${createdQuestionId}/choices`);

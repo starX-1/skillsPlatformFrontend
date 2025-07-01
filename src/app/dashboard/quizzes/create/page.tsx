@@ -99,7 +99,7 @@ const CreateQuizPage = () => {
             // console.log("the res", res)
 
             const createdQuizId = res.id;
-            router.push(`/dashboard/quizzes/${createdQuizId}/questions`);
+            router.push(`/dashboard/quizzes/${createdQuizId}/questions?course_id=${selectedCourse}`);
         } catch (err) {
             console.error(err);
             toast.error('Failed to create quiz');

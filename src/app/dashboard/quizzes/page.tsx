@@ -18,7 +18,7 @@ interface Quiz {
 
 const QuizzesPage = () => {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-    const { user } =useUser()
+    const { user } = useUser()
 
 
     useEffect(() => {
@@ -31,7 +31,7 @@ const QuizzesPage = () => {
             }
         };
         fetchQuizzes();
-    },[user?.id])
+    }, [user?.id])
     const getStatusConfig = (status: QuizStatus) => {
         switch (status) {
             case 'submitted':
@@ -108,14 +108,25 @@ const QuizzesPage = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                            <span className="text-white text-xl font-bold">📚</span>
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                <span className="text-white text-xl font-bold">📚</span>
+                            </div>
+                            <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                                My Quizzes
+                            </h1>
                         </div>
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                            My Quizzes
-                        </h1>
+
+                        {/* Create Quiz Button */}
+                        <Link
+                            href="/dashboard/quizzes/create"
+                            className="px-4 py-2 text-sm rounded-xl font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+                        >
+                            + Create Quiz
+                        </Link>
                     </div>
+
                     <p className="text-slate-600 text-lg">
                         Track your progress and complete your assessments
                     </p>

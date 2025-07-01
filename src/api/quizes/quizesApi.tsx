@@ -1,7 +1,7 @@
 import authenticatedInstance from "@/utils/authenticatedInstance";
 
 class QuizesApi {
-    async createQuiz(data: { module_id:string, instructions:string, deadline:string, duration_minutes:number }) {
+    async createQuiz(data: { course_id:string, title:string, module_id:string, instructions:string, deadline:string, duration_minutes:number }) {
         const response = await authenticatedInstance.post(`/api/quizzes/quiz/create`, data);
         return response.data;
     }

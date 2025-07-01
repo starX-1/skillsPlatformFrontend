@@ -44,6 +44,10 @@ class CourseApi {
         const response = await authenticatedInstance.get(`${enrollUrl}/getCourseEnrollments/${courseId}`);
         return response.data;
     }
+    async getCourseByUploader() {
+        const response = await authenticatedInstance.get(`${url}/getCourseByUploader`);
+        return response.data.courses || [];;
+    }
 }
 
 const courseApi = new CourseApi();

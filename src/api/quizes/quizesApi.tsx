@@ -18,6 +18,15 @@ class QuizesApi {
         const response = await authenticatedInstance.post(`/api/questions/questions/create`, data);
         return response.data;
     }
+    async getQuestionById(questionId: string) {
+        const response = await authenticatedInstance.get(`/api/questions/questions/get-single/${questionId}`);
+        return response.data;
+    }
+    async createChoice(data: { question_id: string, text: string, is_correct: number }) {
+        const response = await authenticatedInstance.post(`/api/choices/create`, data);
+        return response.data;
+
+    }
 }
 
 const quizesApi = new QuizesApi();

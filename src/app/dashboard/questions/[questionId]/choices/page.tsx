@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
+import quizesApi from '@/api/quizes/quizesApi';
 
 const AddChoicesPage = () => {
     const { questionId } = useParams();
@@ -17,8 +18,8 @@ const AddChoicesPage = () => {
     useEffect(() => {
         const fetchQuestion = async () => {
             try {
-                const res = await axios.get(`/api/questions/get-by-id/${questionId}`);
-                setQuestionText(res.data?.question?.text || 'Untitled Question');
+                const res = await quizesApi.getQuestionById(questionId as string);
+                setQuestionText(res?.text || 'Untitled Question');
             } catch (err) {
                 console.error('Failed to load question');
             }
@@ -50,10 +51,15 @@ const AddChoicesPage = () => {
             for (const choice of choices) {
                 if (!choice.text) continue;
 
-                await axios.post('/api/choices/create', {
-                    question_id: questionId,
+                // await axios.post('/api/choices/create', {
+                //     question_id: questionId,
+                //     text: choice.text,
+                //     is_correct: choice.is_correct,
+                // });
+                await quizesApi.createChoice({
+                    question_id: questionId as string,
                     text: choice.text,
-                    is_correct: choice.is_correct,
+                    is_correct: choice.is_correct ? 1 : 0,
                 });
             }
 

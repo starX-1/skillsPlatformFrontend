@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <ProtectedRoute>
-            <div className="flex h-screen bg-neutral-50 text-gray-900 overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 flex h-screen bg-neutral-50 text-gray-900 overflow-hidden">
                 {/* Sidebar - hidden on small screens, toggled with sidebarOpen */}
                 <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 

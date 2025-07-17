@@ -49,7 +49,17 @@ const QuizzesPage = () => {
         fetchQuizzes();
     }, [user?.id]);
 
-    const getStatusConfig = (status: QuizStatus) => {
+    const getStatusConfig = (status: QuizStatus, isOverdue: boolean) => {
+        if (isOverdue && status !== 'submitted') {
+            return {
+                bg: 'bg-gradient-to-r from-red-50 to-rose-50',
+                text: 'text-red-700',
+                border: 'border-red-200',
+                icon: '⚠️',
+                label: 'Overdue'
+            };
+        }
+
         switch (status) {
             case 'submitted':
                 return {
@@ -78,22 +88,33 @@ const QuizzesPage = () => {
         }
     };
 
-    const getButtonConfig = (status: QuizStatus) => {
+    const getButtonConfig = (status: QuizStatus, isOverdue: boolean) => {
+        if (isOverdue && status !== 'submitted') {
+            return {
+                label: 'Quiz Overdue',
+                classes: 'bg-gradient-to-r from-red-300 to-red-400 text-red-800 cursor-not-allowed opacity-75',
+                disabled: true
+            };
+        }
+
         switch (status) {
             case 'submitted':
                 return {
                     label: 'View Results',
-                    classes: 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/25'
+                    classes: 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/25',
+                    disabled: false
                 };
             case 'in_progress':
                 return {
                     label: 'Continue Quiz',
-                    classes: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg shadow-amber-500/25'
+                    classes: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg shadow-amber-500/25',
+                    disabled: false
                 };
             default:
                 return {
                     label: 'Start Quiz',
-                    classes: 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25'
+                    classes: 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/25',
+                    disabled: false
                 };
         }
     };
@@ -130,6 +151,8 @@ const QuizzesPage = () => {
         }
     };
 
+    const isAdmin = user?.role === 'admin';
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 sm:p-6 lg:p-8">
@@ -157,12 +180,15 @@ const QuizzesPage = () => {
                             </h1>
                         </div>
 
-                        <Link
-                            href="/dashboard/quizzes/create"
-                            className="px-4 py-2 text-sm rounded-xl font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
-                        >
-                            + Create Quiz
-                        </Link>
+                        {/* Only show Create Quiz button for admins */}
+                        {isAdmin && (
+                            <Link
+                                href="/dashboard/quizzes/create"
+                                className="px-4 py-2 text-sm rounded-xl font-medium bg-blue-600 text-white hover:bg-blue-700 transition"
+                            >
+                                + Create Quiz
+                            </Link>
+                        )}
                     </div>
 
                     <p className="text-slate-600 text-lg">
@@ -177,14 +203,16 @@ const QuizzesPage = () => {
                             <span className="text-4xl">📚</span>
                         </div>
                         <h3 className="text-xl font-semibold text-slate-600 mb-2">No quizzes yet</h3>
-                        <p className="text-slate-500">Start by creating your first quiz!</p>
+                        <p className="text-slate-500">
+                            {isAdmin ? "Start by creating your first quiz!" : "No quizzes available at the moment."}
+                        </p>
                     </div>
                 ) : (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {quizzes.map((quiz) => {
-                            const statusConfig = getStatusConfig(quiz.status);
-                            const buttonConfig = getButtonConfig(quiz.status);
                             const overdue = isOverdue(quiz.deadline);
+                            const statusConfig = getStatusConfig(quiz.status, overdue);
+                            const buttonConfig = getButtonConfig(quiz.status, overdue);
                             const questionTypes = quiz.questions.reduce((acc, q) => {
                                 acc[q.type] = (acc[q.type] || 0) + 1;
                                 return acc;
@@ -193,7 +221,8 @@ const QuizzesPage = () => {
                             return (
                                 <div
                                     key={quiz.id}
-                                    className="group relative bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl shadow-slate-200/50 rounded-2xl p-6 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1"
+                                    className={`group relative bg-white/80 backdrop-blur-sm border border-white/20 shadow-xl shadow-slate-200/50 rounded-2xl p-6 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 hover:-translate-y-1 ${overdue && quiz.status !== 'submitted' ? 'ring-2 ring-red-200' : ''
+                                        }`}
                                 >
                                     {/* Status Badge */}
                                     <div className="absolute -top-2 -right-2">
@@ -272,18 +301,28 @@ const QuizzesPage = () => {
 
                                         {/* Action Button */}
                                         <div className="pt-4 border-t border-slate-100">
-                                            <Link
-                                                href={`/dashboard/quizzes/${quiz.id}`}
-                                                className={`w-full inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${buttonConfig.classes}`}
-                                            >
-                                                {buttonConfig.label}
-                                                <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
-                                            </Link>
+                                            {buttonConfig.disabled ? (
+                                                <div className={`w-full inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold text-sm ${buttonConfig.classes}`}>
+                                                    {buttonConfig.label}
+                                                    <span className="ml-2">⚠️</span>
+                                                </div>
+                                            ) : (
+                                                <Link
+                                                    href={`/dashboard/quizzes/${quiz.id}`}
+                                                    className={`w-full inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${buttonConfig.classes}`}
+                                                >
+                                                    {buttonConfig.label}
+                                                    <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
+                                                </Link>
+                                            )}
                                         </div>
                                     </div>
 
                                     {/* Decorative Element */}
-                                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-2xl"></div>
+                                    <div className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent ${overdue && quiz.status !== 'submitted'
+                                            ? 'via-red-200 to-transparent'
+                                            : 'via-blue-200 to-transparent'
+                                        } opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-2xl`}></div>
                                 </div>
                             );
                         })}
@@ -294,7 +333,7 @@ const QuizzesPage = () => {
                 {quizzes.length > 0 && (
                     <div className="mt-12 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
                         <h3 className="text-lg font-semibold text-slate-800 mb-4">Quiz Summary</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
                             <div className="space-y-1">
                                 <div className="text-2xl font-bold text-blue-600">
                                     {quizzes.length}
@@ -318,6 +357,12 @@ const QuizzesPage = () => {
                                     {quizzes.filter(q => q.status === 'not_started').length}
                                 </div>
                                 <div className="text-sm text-slate-500">Not Started</div>
+                            </div>
+                            <div className="space-y-1">
+                                <div className="text-2xl font-bold text-red-600">
+                                    {quizzes.filter(q => isOverdue(q.deadline) && q.status !== 'submitted').length}
+                                </div>
+                                <div className="text-sm text-slate-500">Overdue</div>
                             </div>
                         </div>
                     </div>

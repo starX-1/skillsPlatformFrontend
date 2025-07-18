@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import quizesApi from '@/api/quizes/quizesApi';
 import { useUser } from '@/app/context/UserContext';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { useQuiz } from '@/app/context/QuizContext';
 
 type QuizStatus = 'not_started' | 'in_progress' | 'submitted';
 
@@ -33,6 +36,10 @@ const QuizzesPage = () => {
     const [quizzes, setQuizzes] = useState<Quiz[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useUser();
+    const router = useRouter();
+    const { setSelectedQuiz } = useQuiz();
+
+
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -85,6 +92,27 @@ const QuizzesPage = () => {
                     icon: '○',
                     label: 'Not Started'
                 };
+        }
+    };
+
+    // handle starting quiz 
+    const handleStartQuiz = async (quizId: string, durationMinutes: number, label: string) => {
+        const quiz = quizzes.find(q => q.id === quizId);
+        if (!quiz) return;
+
+        if (label === 'Continue Quiz') {
+            setSelectedQuiz(quiz); // 👈
+            router.push(`/dashboard/quizzes/${quizId}`);
+            return;
+        }
+
+        try {
+            await quizesApi.startQuiz(quizId);
+            toast.success(`You have started the Assessment. You have ${durationMinutes} minutes to complete it!`);
+            setSelectedQuiz(quiz); // 👈
+            router.push(`/dashboard/quizzes/${quizId}`);
+        } catch (error) {
+            console.error('Error starting quiz:', error);
         }
     };
 
@@ -307,21 +335,23 @@ const QuizzesPage = () => {
                                                     <span className="ml-2">⚠️</span>
                                                 </div>
                                             ) : (
-                                                <Link
-                                                    href={`/dashboard/quizzes/${quiz.id}`}
+                                                <button
+                                                    onClick={() => handleStartQuiz(quiz.id, quiz.duration_minutes, buttonConfig.label)}
+
+                                                    // href={`/dashboard/quizzes/${quiz.id}`}
                                                     className={`w-full inline-flex items-center justify-center px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${buttonConfig.classes}`}
                                                 >
                                                     {buttonConfig.label}
                                                     <span className="ml-2 transition-transform group-hover:translate-x-0.5">→</span>
-                                                </Link>
+                                                </button>
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Decorative Element */}
                                     <div className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent ${overdue && quiz.status !== 'submitted'
-                                            ? 'via-red-200 to-transparent'
-                                            : 'via-blue-200 to-transparent'
+                                        ? 'via-red-200 to-transparent'
+                                        : 'via-blue-200 to-transparent'
                                         } opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-2xl`}></div>
                                 </div>
                             );

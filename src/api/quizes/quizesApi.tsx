@@ -27,6 +27,10 @@ class QuizesApi {
         return response.data;
 
     }
+    async startQuiz(quizId: string) {
+        const response = await authenticatedInstance.post(`/api/quiz-responses/create`, { quiz_id: quizId });
+        return response.data;
+    }
 }
 
 const quizesApi = new QuizesApi();

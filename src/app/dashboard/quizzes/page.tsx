@@ -107,8 +107,8 @@ const QuizzesPage = () => {
         }
 
         try {
-            await quizesApi.startQuiz(quizId);
-            toast.success(`You have started the Assessment. You have ${durationMinutes} minutes to complete it!`);
+            // await quizesApi.startQuiz(quizId);
+            toast.success(`You have About to start the Assessment. You will have ${durationMinutes} minutes to complete it!`);
             setSelectedQuiz(quiz); // 👈
             router.push(`/dashboard/quizzes/${quizId}`);
         } catch (error) {

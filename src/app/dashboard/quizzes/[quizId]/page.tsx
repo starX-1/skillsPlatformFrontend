@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import quizesApi from '@/api/quizes/quizesApi';
 import { useUser } from '@/app/context/UserContext';
 import { useQuiz } from '@/app/context/QuizContext'; // Add this import
+import { toast } from 'react-toastify';
 
 type QuizStatus = 'not_started' | 'in_progress' | 'submitted';
 
@@ -53,6 +54,7 @@ const QuizTakingPage = () => {
     const [submitting, setSubmitting] = useState(false);
     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
     const [autoSubmitted, setAutoSubmitted] = useState(false);
+    const [quizResponseId, setQuizResponseId] = useState<string | null>(null); // Store quiz response ID if needed
 
     const router = useRouter();
     const params = useParams();
@@ -146,7 +148,10 @@ const QuizTakingPage = () => {
 
     const handleStartQuiz = async () => {
         try {
-            await quizesApi.startQuiz(quizId);
+            const res = await quizesApi.startQuiz(quizId);
+            setQuizResponseId(res.id);
+            console.log(res, "This is the start quiz response")
+            // Store quiz response ID if needed
             setQuizStarted(true);
             setTimeRemaining(quiz!.duration_minutes * 60);
 
@@ -183,21 +188,34 @@ const QuizTakingPage = () => {
         try {
             setSubmitting(true);
 
-            // await quizesApi.submitQuiz(quizId, userAnswers);
+            // Submit each answer and each question individually together with the quiz response id
+            for (const answer of userAnswers) {
+                if (answer.answer_id || (answer.text_answer && answer.text_answer.trim() !== '')) {
+                    // need to get the quiz response id from the start quiz response
+
+
+                    await quizesApi.submitQuizResponse({
+                        quiz_response_id: quizResponseId || '', // You might need to get this from the startQuiz response
+                        question_id: answer.question_id,
+                        choice_id: answer.answer_id || '',  // Empty if text answer
+                        text_answer: answer.text_answer || ""
+                    });
+                }
+            }
 
             // Update quiz status
             setQuiz(prev => prev ? { ...prev, status: 'submitted' } : null);
 
             if (isAutoSubmit) {
-                alert('Time is up! Your quiz has been automatically submitted.');
+                toast.success('Time is up! Your quiz has been automatically submitted.');
             }
 
             // Redirect to results page
-            router.push(`/dashboard/quizzes/${quizId}/results`);
+            // router.push(`/dashboard/quizzes/${quizId}/results`);
 
         } catch (error) {
             console.error('Error submitting quiz:', error);
-            alert('Error submitting quiz. Please try again.');
+            toast.error('Error submitting quiz. Please try again.');
         } finally {
             setSubmitting(false);
             setShowConfirmSubmit(false);
@@ -230,9 +248,11 @@ const QuizTakingPage = () => {
             answer.answer_id || (answer.text_answer && answer.text_answer.trim() !== '')
         ).length;
     };
-    // console.log(quiz)
+    console.log(quiz)
     const currentQuestion = quiz?.questions[currentQuestionIndex];
     const currentAnswer = userAnswers.find(a => a.question_id === currentQuestion?.id);
+
+    console.log(currentQuestion, "Thhis is the currentn")
 
     if (loading) {
         return (
@@ -465,9 +485,13 @@ const QuizTakingPage = () => {
                                     <div className="mb-8">
                                         <h2 className="text-xl font-semibold text-slate-800 mb-4">
                                             {currentQuestion.text}
+                                            {/* // console the current question  */}
+                                            {/* {console.log(currentQuestion,"Thhis is the currentn")} */}
+
                                         </h2>
 
                                         {currentQuestion.type === 'multiple_choice' && currentQuestion.answers ? (
+
                                             <div className="space-y-3">
                                                 {currentQuestion.answers.map((answer) => (
                                                     <label

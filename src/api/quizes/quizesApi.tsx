@@ -31,6 +31,10 @@ class QuizesApi {
         const response = await authenticatedInstance.post(`/api/quiz-responses/create`, { quiz_id: quizId });
         return response.data;
     }
+    async submitQuizResponse(data: { quiz_response_id: string, question_id: string, choice_id: string, text_answer?: string }) {
+        const response = await authenticatedInstance.post(`/api/question-answers/create`, data);
+        return response.data;
+    }
 }
 
 const quizesApi = new QuizesApi();

@@ -62,8 +62,8 @@ const AddChoicesPage = () => {
                     is_correct: choice.is_correct ? 1 : 0,
                 });
             }
-
-            router.push(`/dashboard/quizzes`); // Or redirect back to the quiz
+            // redirect back to the add questions page 
+            router.back() 
         } catch (err) {
             console.error(err);
             setError('Failed to save choices');

@@ -187,18 +187,32 @@ const QuizTakingPage = () => {
     const handleSubmitQuiz = async (isAutoSubmit = false) => {
         try {
             setSubmitting(true);
+            // Validate at least one question is answered
+            const answeredCount = userAnswers.filter(answer =>
+                answer.answer_id || (answer.text_answer && answer.text_answer.trim() !== '')
+            ).length;
+
+            if (answeredCount === 0) {
+                toast.error('Please answer at least one question before submitting.');
+                setSubmitting(false);
+                setShowConfirmSubmit(false);
+                return;
+            }
+
+            // get the quiz response id using the quizId
+            const quiz_response_id = await quizesApi.getQuizeResponseByQuizId(quizId);
+            console.log(quiz_response_id, "This is the quiz response id")
 
             // Submit each answer and each question individually together with the quiz response id
             for (const answer of userAnswers) {
                 if (answer.answer_id || (answer.text_answer && answer.text_answer.trim() !== '')) {
                     // need to get the quiz response id from the start quiz response
 
-
                     await quizesApi.submitQuizResponse({
-                        quiz_response_id: quizResponseId || '', // You might need to get this from the startQuiz response
+                        quiz_response_id: quiz_response_id[0]?.id || '', // You might need to get this from the startQuiz response
                         question_id: answer.question_id,
-                        choice_id: answer.answer_id || '',  // Empty if text answer
-                        text_answer: answer.text_answer || ""
+                        selected_choice_id: answer.answer_id || null,  // Empty if text answer
+                        answer_text: answer.text_answer || null
                     });
                 }
             }

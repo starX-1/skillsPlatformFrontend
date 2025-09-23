@@ -202,6 +202,8 @@ const QuizTakingPage = () => {
             // get the quiz response id using the quizId
             const quiz_response_id = await quizesApi.getQuizeResponseByQuizId(quizId);
             console.log(quiz_response_id, "This is the quiz response id")
+            const an_update=await quizesApi.UpdateQuizSubmitedAt({ quiz_response_id: quiz_response_id[0].id });
+            console.log(an_update, "This is the update response after submition")
 
             // Submit each answer and each question individually together with the quiz response id
             for (const answer of userAnswers) {
@@ -216,6 +218,10 @@ const QuizTakingPage = () => {
                     });
                 }
             }
+
+            // Update quiz response as submitted
+            // if (quiz_response_id[0]?.id) {
+            // }
 
             // Update quiz status
             setQuiz(prev => prev ? { ...prev, status: 'submitted' } : null);

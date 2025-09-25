@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+// import axios from 'axios';
 import quizesApi from '@/api/quizes/quizesApi';
 
 const AddChoicesPage = () => {
@@ -21,7 +21,7 @@ const AddChoicesPage = () => {
                 const res = await quizesApi.getQuestionById(questionId as string);
                 setQuestionText(res?.text || 'Untitled Question');
             } catch (err) {
-                console.error('Failed to load question');
+                console.error('Failed to load question', err);
             }
         };
         fetchQuestion();

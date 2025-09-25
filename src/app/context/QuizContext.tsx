@@ -2,6 +2,22 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+// define question interface
+interface Answer {
+    id: string;
+    question_id: string;
+    text: string;
+    is_correct?: boolean;
+}
+
+interface Question {
+    id: string;
+    quiz_id: string;
+    text: string;
+    type: 'text' | 'multiple_choice';
+    answers?: Answer[];
+}
+
 interface Quiz {
     id: string;
     module_id: string;
@@ -13,7 +29,7 @@ interface Quiz {
     status: string;
     course_title: string;
     module_title: string;
-    questions: any[];
+    questions:Question[];
 }
 
 interface QuizContextType {

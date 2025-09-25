@@ -15,8 +15,16 @@ interface Question {
     quiz_id: string;
     text: string;
     type: 'text' | 'multiple_choice';
-    answers?: any[];
+    answers?: Answer[];
 }
+
+interface Answer {
+    id: string;
+    question_id: string;
+    text: string;
+    is_correct?: boolean;
+}
+
 
 interface Quiz {
     id: string;

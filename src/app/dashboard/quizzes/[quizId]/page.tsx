@@ -54,11 +54,11 @@ const QuizTakingPage = () => {
     const [submitting, setSubmitting] = useState(false);
     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
     const [autoSubmitted, setAutoSubmitted] = useState(false);
-    const [quizResponseId, setQuizResponseId] = useState<string | null>(null); // Store quiz response ID if needed
+    // const [quizResponseId, setQuizResponseId] = useState<string | null>(null); // Store quiz response ID if needed
 
     const router = useRouter();
     const params = useParams();
-    const { user } = useUser();
+    // const { user } = useUser();
     const { selectedQuiz } = useQuiz(); // Add this hook
     const quizId = params.quizId as string;
 
@@ -83,7 +83,7 @@ const QuizTakingPage = () => {
                     }
 
                     // Initialize user answers array
-                    const initialAnswers = selectedQuiz.questions.map((q) => ({
+                    const initialAnswers = selectedQuiz.questions.map((q:Question) => ({
                         question_id: q.id,
                         answer_id: undefined,
                         text_answer: undefined
@@ -101,7 +101,7 @@ const QuizTakingPage = () => {
                     }
 
                     // Initialize user answers array
-                    const initialAnswers = quizData.questions.map((q: { id: any; }) => ({
+                    const initialAnswers = quizData.questions.map((q: { id: string; }) => ({
                         question_id: q.id,
                         answer_id: undefined,
                         text_answer: undefined
@@ -149,7 +149,7 @@ const QuizTakingPage = () => {
     const handleStartQuiz = async () => {
         try {
             const res = await quizesApi.startQuiz(quizId);
-            setQuizResponseId(res.id);
+            // setQuizResponseId(res.id);
             console.log(res, "This is the start quiz response")
             // Store quiz response ID if needed
             setQuizStarted(true);

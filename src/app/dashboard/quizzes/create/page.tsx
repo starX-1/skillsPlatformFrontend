@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+// import axios from 'axios';
 import courseApi from '@/api/courses/courseApi';
 import { useUser } from '@/app/context/UserContext';
 import moduleApi from '@/api/modules/moduleApi';

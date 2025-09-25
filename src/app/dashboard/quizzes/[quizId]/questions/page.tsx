@@ -28,7 +28,7 @@ const AddQuestionsPage = () => {
                 console.log(res);
                 setQuizTitle(res?.title || 'Untitled Quiz');
             } catch (err) {
-                console.error('Failed to load quiz');
+                console.error('Failed to load quiz', err);
             }
         };
         fetchQuiz();

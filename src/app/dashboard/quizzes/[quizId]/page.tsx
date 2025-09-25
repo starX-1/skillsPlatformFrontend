@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import quizesApi from '@/api/quizes/quizesApi';
-import { useUser } from '@/app/context/UserContext';
+// import { useUser } from '@/app/context/UserContext';
 import { useQuiz } from '@/app/context/QuizContext'; // Add this import
 import { toast } from 'react-toastify';
 

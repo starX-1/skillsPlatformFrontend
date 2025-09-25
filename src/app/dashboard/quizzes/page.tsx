@@ -105,6 +105,11 @@ const QuizzesPage = () => {
             router.push(`/dashboard/quizzes/${quizId}`);
             return;
         }
+        if (label === 'View Results') {
+            setSelectedQuiz(quiz); // 👈
+            router.push(`/dashboard/quizzes/${quizId}/results`);
+            return;
+        }
 
         try {
             // await quizesApi.startQuiz(quizId);

@@ -83,7 +83,7 @@ const QuizTakingPage = () => {
                     }
 
                     // Initialize user answers array
-                    const initialAnswers = selectedQuiz.questions.map((q:Question) => ({
+                    const initialAnswers = selectedQuiz.questions.map((q: Question) => ({
                         question_id: q.id,
                         answer_id: undefined,
                         text_answer: undefined
@@ -202,7 +202,7 @@ const QuizTakingPage = () => {
             // get the quiz response id using the quizId
             const quiz_response_id = await quizesApi.getQuizeResponseByQuizId(quizId);
             console.log(quiz_response_id, "This is the quiz response id")
-            const an_update=await quizesApi.UpdateQuizSubmitedAt({ quiz_response_id: quiz_response_id[0].id });
+            const an_update = await quizesApi.UpdateQuizSubmitedAt({ quiz_response_id: quiz_response_id[0].id });
             console.log(an_update, "This is the update response after submition")
 
             // Submit each answer and each question individually together with the quiz response id
